@@ -470,7 +470,7 @@
                 </div>
                 <div class="stat-card">
                     <i class="fas fa-euro-sign"></i>
-                    <h3 id="stats-ca">0€</h3>
+                    <h3 id="stats-ca">0 dhs</h3>
                     <p>Chiffre d'Affaires</p>
                 </div>
             </div>
@@ -1018,7 +1018,7 @@
             const totalCA = (data.ventes || []).reduce((sum, vente) => {
                 return sum + (vente.montantTotal || 0);
             }, 0);
-            document.getElementById('stats-ca').textContent = totalCA.toFixed(2) + '€';
+            document.getElementById('stats-ca').textContent = totalCA.toFixed(2) + ' dhs';
         }
 
         function updateAllTables() {
@@ -1047,7 +1047,7 @@
                     <td>${formatDate(achat.date)}</td>
                     <td>${achat.fournisseur || '-'}</td>
                     <td>${totalArticles} article(s)</td>
-                    <td>${montantTotal.toFixed(2)}€</td>
+                    <td>${montantTotal.toFixed(2)} dhs</td>
                     <td><span class="status-badge status-${achat.statutPaiement || 'impaye'}">${achat.statutPaiement || 'Impayé'}</span></td>
                     <td>
                         <button class="btn btn-warning" onclick="editAchat('${achat.id}')"><i class="fas fa-edit"></i></button>
@@ -1132,7 +1132,7 @@
                     <td>${formatDate(vente.date)}</td>
                     <td>${vente.client || '-'}</td>
                     <td>${totalArticles} article(s)</td>
-                    <td>${(vente.montantTotal || 0).toFixed(2)}€</td>
+                    <td>${(vente.montantTotal || 0).toFixed(2)} dhs</td>
                     <td><span class="status-badge status-${vente.statutPaiement || 'impaye'}">${vente.statutPaiement || 'Impayé'}</span></td>
                     <td>
                         <button class="btn btn-warning" onclick="editVente('${vente.id}')"><i class="fas fa-edit"></i></button>
@@ -1220,8 +1220,8 @@
                     <td>${item.nom || '-'}</td>
                     <td style="color: ${lowStock ? 'red' : 'black'}; font-weight: ${lowStock ? 'bold' : 'normal'}">${item.quantite || 0}</td>
                     <td>${item.seuil || 0}</td>
-                    <td>${(item.prixAchat || 0).toFixed(2)}€</td>
-                    <td>${(item.prixVente || 0).toFixed(2)}€</td>
+                    <td>${(item.prixAchat || 0).toFixed(2)} dhs</td>
+                    <td>${(item.prixVente || 0).toFixed(2)} dhs</td>
                     <td>${item.dernierFournisseur || '-'}</td>
                     <td>${formatDate(item.datePeremption)}</td>
                     <td>
@@ -1311,7 +1311,7 @@
                 row.innerHTML = `
                     <td>${formatDate(paiement.date)}</td>
                     <td><span class="status-badge ${paiement.type === 'ventes' ? 'status-paye' : 'status-impaye'}">${paiement.type || '-'}</span></td>
-                    <td>${(paiement.montant || 0).toFixed(2)}€</td>
+                    <td>${(paiement.montant || 0).toFixed(2)} dhs</td>
                     <td>${paiement.mode || '-'}</td>
                     <td>${paiement.createdBy || '-'}</td>
                     <td>
