@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pharma Gestion - Interface de Gestion</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>Pharma Gestion - Mode Hors Ligne</title>
     <style>
         * {
             margin: 0;
@@ -27,206 +26,361 @@
 
         .header {
             background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
             border-radius: 15px;
-            padding: 20px;
+            padding: 30px;
             margin-bottom: 30px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
         }
 
         .header h1 {
-            color: #667eea;
-            text-align: center;
-            margin-bottom: 10px;
+            color: #2c3e50;
             font-size: 2.5em;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
         }
 
-        .info-cards {
+        .header p {
+            text-align: center;
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .status-bar {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            padding: 15px 25px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #e74c3c;
+        }
+
+        .status-indicator.online {
+            background: #27ae60;
+        }
+
+        .control-panel {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .file-controls {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 15px;
             margin-bottom: 20px;
         }
 
-        .info-card {
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            color: white;
-            padding: 15px;
-            border-radius: 10px;
-            text-align: center;
-        }
-
-        .nav-tabs {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .nav-tab {
-            background: rgba(255, 255, 255, 0.9);
-            border: none;
-            padding: 12px 20px;
-            border-radius: 25px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: 500;
-        }
-
-        .nav-tab:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-        }
-
-        .nav-tab.active {
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            color: white;
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-        }
-
-        .content-section {
-            display: none;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-        }
-
-        .content-section.active {
-            display: block;
-            animation: fadeIn 0.3s ease-in;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #f0f0f0;
-        }
-
         .btn {
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            color: white;
+            padding: 12px 24px;
             border: none;
-            padding: 10px 20px;
-            border-radius: 25px;
+            border-radius: 10px;
+            font-size: 1em;
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
-            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            justify-content: center;
         }
 
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(45deg, #56ab2f, #a8e6cf);
+            color: white;
+        }
+
+        .btn-warning {
+            background: linear-gradient(45deg, #f093fb, #f5576c);
+            color: white;
         }
 
         .btn-danger {
             background: linear-gradient(45deg, #ff6b6b, #ee5a52);
+            color: white;
         }
 
-        .btn-danger:hover {
-            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
         }
 
-        .btn-warning {
-            background: linear-gradient(45deg, #ffa726, #ff9800);
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
         }
 
-        .btn-warning:hover {
-            box-shadow: 0 5px 15px rgba(255, 167, 38, 0.4);
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
         }
 
-        .data-table {
+        .file-input {
+            display: none;
+        }
+
+        .data-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .summary-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .summary-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .summary-card h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            padding: 5px 0;
+        }
+
+        .summary-label {
+            color: #666;
+        }
+
+        .summary-value {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .tabs {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab-buttons {
+            display: flex;
+            background: rgba(240, 240, 240, 0.5);
+            overflow-x: auto;
+        }
+
+        .tab-button {
+            padding: 15px 25px;
+            background: none;
+            border: none;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            color: #666;
+        }
+
+        .tab-button.active {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 30px;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        .table-actions {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 15px;
-            background: white;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
 
-        .data-table th {
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            color: white;
-            padding: 15px;
-            text-align: left;
-            font-weight: 600;
-        }
-
-        .data-table td {
+        th, td {
             padding: 12px 15px;
-            border-bottom: 1px solid #f0f0f0;
+            text-align: left;
+            border-bottom: 1px solid #eee;
         }
 
-        .data-table tr:hover {
-            background-color: #f8f9ff;
+        th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #2c3e50;
+            position: sticky;
+            top: 0;
+        }
+
+        tr:hover {
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 0.85em;
+            border-radius: 5px;
+        }
+
+        .alert {
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .alert-success {
+            background: rgba(39, 174, 96, 0.1);
+            color: #27ae60;
+            border-left: 4px solid #27ae60;
+        }
+
+        .alert-error {
+            background: rgba(231, 76, 60, 0.1);
+            color: #e74c3c;
+            border-left: 4px solid #e74c3c;
+        }
+
+        .alert-info {
+            background: rgba(52, 152, 219, 0.1);
+            color: #3498db;
+            border-left: 4px solid #3498db;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #eee;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            width: 0%;
+            transition: width 0.3s ease;
         }
 
         .modal {
             display: none;
             position: fixed;
-            z-index: 1000;
-            left: 0;
             top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(5px);
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
         }
 
         .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             background: white;
-            margin: 5% auto;
-            padding: 30px;
             border-radius: 15px;
+            padding: 30px;
+            max-width: 800px;
             width: 90%;
-            max-width: 600px;
             max-height: 80vh;
             overflow-y: auto;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
         }
 
         .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 24px;
             font-weight: bold;
             cursor: pointer;
-            transition: color 0.3s ease;
+            color: #999;
         }
 
         .close:hover {
-            color: #667eea;
+            color: #333;
         }
 
-        .form-group {
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
             margin-bottom: 20px;
         }
 
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
         .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-            color: #555;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #2c3e50;
         }
 
         .form-group input,
         .form-group select,
         .form-group textarea {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #e1e5e9;
+            padding: 10px;
+            border: 2px solid #e9ecef;
             border-radius: 8px;
-            font-size: 14px;
+            font-size: 1em;
             transition: border-color 0.3s ease;
         }
 
@@ -235,143 +389,47 @@
         .form-group textarea:focus {
             outline: none;
             border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
 
-        .search-container {
+        .form-actions {
             display: flex;
-            gap: 15px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
         }
 
-        .search-box {
-            flex: 1;
-            min-width: 250px;
-        }
-
-        .search-box input {
-            width: 100%;
-            padding: 12px 20px;
-            border: 2px solid #e1e5e9;
-            border-radius: 25px;
-            font-size: 14px;
-            background: white;
-            transition: all 0.3s ease;
-        }
-
-        .search-box input:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-            outline: none;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .stat-card {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            text-align: center;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .stat-card i {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .import-export {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-
-        .file-input {
-            position: relative;
-            overflow: hidden;
-            display: inline-block;
-        }
-
-        .file-input input[type=file] {
-            position: absolute;
-            left: -9999px;
-        }
-
-        .file-input label {
-            background: linear-gradient(45deg, #28a745, #20c997);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 25px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: inline-block;
-        }
-
-        .file-input label:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
-        }
-
-        .status-badge {
-            padding: 5px 10px;
-            border-radius: 15px;
-            font-size: 12px;
+        .total-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-size: 1.1em;
             font-weight: 600;
-            text-transform: uppercase;
-        }
-
-        .status-paye {
-            background: #d4edda;
-            color: #155724;
-        }
-
-        .status-impaye {
-            background: #f8d7da;
-            color: #721c24;
         }
 
         @media (max-width: 768px) {
             .container {
                 padding: 10px;
             }
-
+            
+            .file-controls {
+                grid-template-columns: 1fr;
+            }
+            
+            .tab-buttons {
+                flex-wrap: wrap;
+            }
+            
             .header h1 {
                 font-size: 2em;
             }
 
-            .nav-tabs {
-                justify-content: center;
+            .form-grid {
+                grid-template-columns: 1fr;
             }
 
-            .nav-tab {
-                font-size: 12px;
-                padding: 8px 15px;
-            }
-
-            .data-table {
-                font-size: 12px;
-            }
-
-            .modal-content {
-                width: 95%;
-                margin: 10% auto;
-                padding: 20px;
+            .table-actions {
+                flex-direction: column;
             }
         }
     </style>
@@ -379,1182 +437,1718 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1><i class="fas fa-pills"></i> Pharma Gestion</h1>
-            <div class="info-cards">
-                <div class="info-card">
-                    <h3 id="societeName">-</h3>
-                    <p>Société</p>
-                </div>
-                <div class="info-card">
-                    <h3 id="totalDocs">0</h3>
-                    <p>Documents Total</p>
-                </div>
-                <div class="info-card">
-                    <h3 id="exportDate">-</h3>
-                    <p>Date Export</p>
-                </div>
-                <div class="info-card">
-                    <h3 id="appVersion">-</h3>
-                    <p>Version App</p>
-                </div>
-            </div>
+            <h1>Pharma Gestion - Mode Hors Ligne</h1>
+            <p>Importez vos données, travaillez hors ligne, et exportez vos modifications</p>
+        </div>
 
-            <div class="import-export">
-                <div class="file-input">
-                    <input type="file" id="jsonFileInput" accept=".json">
-                    <label for="jsonFileInput">
-                        <i class="fas fa-upload"></i> Importer JSON
-                    </label>
-                </div>
-                <button class="btn" onclick="exportData()">
-                    <i class="fas fa-download"></i> Exporter JSON
-                </button>
-                <button class="btn btn-danger" onclick="resetData()">
-                    <i class="fas fa-trash"></i> Réinitialiser
-                </button>
+        <div class="status-bar">
+            <div class="status-item">
+                <div class="status-indicator" id="connectionStatus"></div>
+                <span id="connectionText">Hors ligne</span>
             </div>
-
-            <div class="nav-tabs">
-                <button class="nav-tab active" onclick="showSection('dashboard')">
-                    <i class="fas fa-chart-pie"></i> Dashboard
-                </button>
-                <button class="nav-tab" onclick="showSection('achats')">
-                    <i class="fas fa-shopping-cart"></i> Achats
-                </button>
-                <button class="nav-tab" onclick="showSection('ventes')">
-                    <i class="fas fa-cash-register"></i> Ventes
-                </button>
-                <button class="nav-tab" onclick="showSection('stock')">
-                    <i class="fas fa-boxes"></i> Stock
-                </button>
-                <button class="nav-tab" onclick="showSection('paiements')">
-                    <i class="fas fa-credit-card"></i> Paiements
-                </button>
-                <button class="nav-tab" onclick="showSection('users')">
-                    <i class="fas fa-users"></i> Utilisateurs
-                </button>
+            <div class="status-item">
+                <strong id="lastSync">Aucune synchronisation</strong>
+            </div>
+            <div class="status-item">
+                <span id="dataStatus">Aucune donnée chargée</span>
             </div>
         </div>
 
-        <!-- Dashboard Section -->
-        <div id="dashboard" class="content-section active">
-            <div class="section-header">
-                <h2><i class="fas fa-chart-pie"></i> Tableau de Bord</h2>
-            </div>
-            
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <i class="fas fa-shopping-cart"></i>
-                    <h3 id="stats-achats">0</h3>
-                    <p>Achats</p>
-                </div>
-                <div class="stat-card">
-                    <i class="fas fa-cash-register"></i>
-                    <h3 id="stats-ventes">0</h3>
-                    <p>Ventes</p>
-                </div>
-                <div class="stat-card">
-                    <i class="fas fa-boxes"></i>
-                    <h3 id="stats-stock">0</h3>
-                    <p>Articles en Stock</p>
-                </div>
-                <div class="stat-card">
-                    <i class="fas fa-credit-card"></i>
-                    <h3 id="stats-paiements">0</h3>
-                    <p>Paiements</p>
-                </div>
-                <div class="stat-card">
-                    <i class="fas fa-users"></i>
-                    <h3 id="stats-users">0</h3>
-                    <p>Utilisateurs</p>
-                </div>
-                <div class="stat-card">
-                    <i class="fas fa-euro-sign"></i>
-                    <h3 id="stats-ca">0 dhs</h3>
-                    <p>Chiffre d'Affaires</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Achats Section -->
-        <div id="achats" class="content-section">
-            <div class="section-header">
-                <h2><i class="fas fa-shopping-cart"></i> Gestion des Achats</h2>
-                <button class="btn" onclick="openModal('achatModal')">
-                    <i class="fas fa-plus"></i> Nouvel Achat
+        <div class="control-panel">
+            <div class="file-controls">
+                <input type="file" id="importFile" class="file-input" accept=".json">
+                <button class="btn btn-primary" onclick="document.getElementById('importFile').click()">
+                    Importer JSON
+                </button>
+                <button class="btn btn-success" id="exportBtn" onclick="exportData()" disabled>
+                    Exporter JSON
+                </button>
+                <button class="btn btn-warning" onclick="clearData()">
+                    Effacer données
                 </button>
             </div>
-            
-            <div class="search-container">
-                <div class="search-box">
-                    <input type="text" id="searchAchats" placeholder="Rechercher dans les achats..." onkeyup="searchTable('achatsTable', this.value)">
-                </div>
-            </div>
-
-            <table class="data-table" id="achatsTable">
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Fournisseur</th>
-                        <th>Articles</th>
-                        <th>Montant</th>
-                        <th>Statut</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="achatsTableBody">
-                </tbody>
-            </table>
+            <div id="alerts"></div>
         </div>
 
-        <!-- Ventes Section -->
-        <div id="ventes" class="content-section">
-            <div class="section-header">
-                <h2><i class="fas fa-cash-register"></i> Gestion des Ventes</h2>
-                <button class="btn" onclick="openModal('venteModal')">
-                    <i class="fas fa-plus"></i> Nouvelle Vente
-                </button>
-            </div>
-            
-            <div class="search-container">
-                <div class="search-box">
-                    <input type="text" id="searchVentes" placeholder="Rechercher dans les ventes..." onkeyup="searchTable('ventesTable', this.value)">
-                </div>
-            </div>
-
-            <table class="data-table" id="ventesTable">
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Client</th>
-                        <th>Articles</th>
-                        <th>Montant</th>
-                        <th>Statut</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="ventesTableBody">
-                </tbody>
-            </table>
+        <div class="data-summary" id="dataSummary" style="display: none;">
+            <!-- Les cartes de résumé seront générées dynamiquement -->
         </div>
 
-        <!-- Stock Section -->
-        <div id="stock" class="content-section">
-            <div class="section-header">
-                <h2><i class="fas fa-boxes"></i> Gestion du Stock</h2>
-                <button class="btn" onclick="openModal('stockModal')">
-                    <i class="fas fa-plus"></i> Nouvel Article
-                </button>
+        <div class="tabs" id="dataTabs" style="display: none;">
+            <div class="tab-buttons" id="tabButtons">
+                <!-- Les boutons d'onglets seront générés dynamiquement -->
             </div>
-            
-            <div class="search-container">
-                <div class="search-box">
-                    <input type="text" id="searchStock" placeholder="Rechercher dans le stock..." onkeyup="searchTable('stockTable', this.value)">
-                </div>
+            <div id="tabContents">
+                <!-- Le contenu des onglets sera généré dynamiquement -->
             </div>
-
-            <table class="data-table" id="stockTable">
-                <thead>
-                    <tr>
-                        <th>Nom</th>
-                        <th>Quantité</th>
-                        <th>Seuil</th>
-                        <th>Prix Achat</th>
-                        <th>Prix Vente</th>
-                        <th>Fournisseur</th>
-                        <th>Expiration</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="stockTableBody">
-                </tbody>
-            </table>
-        </div>
-
-        <!-- Paiements Section -->
-        <div id="paiements" class="content-section">
-            <div class="section-header">
-                <h2><i class="fas fa-credit-card"></i> Gestion des Paiements</h2>
-                <button class="btn" onclick="openModal('paiementModal')">
-                    <i class="fas fa-plus"></i> Nouveau Paiement
-                </button>
-            </div>
-            
-            <div class="search-container">
-                <div class="search-box">
-                    <input type="text" id="searchPaiements" placeholder="Rechercher dans les paiements..." onkeyup="searchTable('paiementsTable', this.value)">
-                </div>
-            </div>
-
-            <table class="data-table" id="paiementsTable">
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Type</th>
-                        <th>Montant</th>
-                        <th>Mode</th>
-                        <th>Créé par</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="paiementsTableBody">
-                </tbody>
-            </table>
-        </div>
-
-        <!-- Users Section -->
-        <div id="users" class="content-section">
-            <div class="section-header">
-                <h2><i class="fas fa-users"></i> Gestion des Utilisateurs</h2>
-                <button class="btn" onclick="openModal('userModal')">
-                    <i class="fas fa-plus"></i> Nouvel Utilisateur
-                </button>
-            </div>
-            
-            <div class="search-container">
-                <div class="search-box">
-                    <input type="text" id="searchUsers" placeholder="Rechercher dans les utilisateurs..." onkeyup="searchTable('usersTable', this.value)">
-                </div>
-            </div>
-
-            <table class="data-table" id="usersTable">
-                <thead>
-                    <tr>
-                        <th>Nom</th>
-                        <th>Email</th>
-                        <th>Rôle</th>
-                        <th>Actif</th>
-                        <th>Dernière Connexion</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="usersTableBody">
-                </tbody>
-            </table>
         </div>
     </div>
 
-    <!-- Modals -->
-    <div id="achatModal" class="modal">
+    <!-- Modal pour la progression -->
+    <div id="progressModal" class="modal">
         <div class="modal-content">
-            <span class="close" onclick="closeModal('achatModal')">&times;</span>
-            <h2>Nouvel Achat</h2>
-            <div class="form-group">
-                <label>Date:</label>
-                <input type="date" id="achat-date" required>
+            <h3>Traitement en cours...</h3>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
             </div>
-            <div class="form-group">
-                <label>Fournisseur:</label>
-                <input type="text" id="achat-fournisseur" placeholder="Nom du fournisseur" required>
-            </div>
-            <div class="form-group">
-                <label>Statut Paiement:</label>
-                <select id="achat-statut">
-                    <option value="payé">Payé</option>
-                    <option value="impayé">Impayé</option>
-                </select>
-            </div>
-            <button class="btn" onclick="saveAchat()">Enregistrer</button>
+            <p id="progressText">Initialisation...</p>
         </div>
     </div>
 
-    <div id="venteModal" class="modal">
+    <!-- Modal pour ajouter/modifier -->
+    <div id="editModal" class="modal">
         <div class="modal-content">
-            <span class="close" onclick="closeModal('venteModal')">&times;</span>
-            <h2>Nouvelle Vente</h2>
-            <div class="form-group">
-                <label>Date:</label>
-                <input type="date" id="vente-date" required>
+            <span class="close" onclick="closeEditModal()">&times;</span>
+            <h3 id="editModalTitle">Ajouter</h3>
+            <div id="editForm">
+                <!-- Le formulaire sera généré dynamiquement -->
             </div>
-            <div class="form-group">
-                <label>Client:</label>
-                <input type="text" id="vente-client" placeholder="Nom du client" required>
-            </div>
-            <div class="form-group">
-                <label>Montant Total:</label>
-                <input type="number" id="vente-montant" placeholder="0.00" step="0.01" required>
-            </div>
-            <div class="form-group">
-                <label>Mode de Paiement:</label>
-                <select id="vente-mode">
-                    <option value="Espèces">Espèces</option>
-                    <option value="Carte">Carte</option>
-                    <option value="Virement">Virement</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Statut Paiement:</label>
-                <select id="vente-statut">
-                    <option value="payé">Payé</option>
-                    <option value="impayé">Impayé</option>
-                </select>
-            </div>
-            <button class="btn" onclick="saveVente()">Enregistrer</button>
         </div>
     </div>
 
-    <div id="stockModal" class="modal">
+    <!-- Modal de confirmation -->
+    <div id="confirmModal" class="modal">
         <div class="modal-content">
-            <span class="close" onclick="closeModal('stockModal')">&times;</span>
-            <h2>Nouvel Article Stock</h2>
-            <div class="form-group">
-                <label>Nom du Produit:</label>
-                <input type="text" id="stock-nom" placeholder="Nom du produit" required>
+            <h3>Confirmation</h3>
+            <p id="confirmMessage"></p>
+            <div class="form-actions">
+                <button class="btn btn-secondary" onclick="closeConfirmModal()">Annuler</button>
+                <button class="btn btn-danger" id="confirmButton">Confirmer</button>
             </div>
-            <div class="form-group">
-                <label>Quantité:</label>
-                <input type="number" id="stock-quantite" placeholder="0" required>
-            </div>
-            <div class="form-group">
-                <label>Seuil Minimum:</label>
-                <input type="number" id="stock-seuil" placeholder="5" required>
-            </div>
-            <div class="form-group">
-                <label>Prix d'Achat:</label>
-                <input type="number" id="stock-prix-achat" placeholder="0.00" step="0.01" required>
-            </div>
-            <div class="form-group">
-                <label>Prix de Vente:</label>
-                <input type="number" id="stock-prix-vente" placeholder="0.00" step="0.01" required>
-            </div>
-            <div class="form-group">
-                <label>Fournisseur:</label>
-                <input type="text" id="stock-fournisseur" placeholder="Nom du fournisseur">
-            </div>
-            <div class="form-group">
-                <label>Date de Péremption:</label>
-                <input type="date" id="stock-peremption">
-            </div>
-            <button class="btn" onclick="saveStock()">Enregistrer</button>
-        </div>
-    </div>
-
-    <div id="paiementModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('paiementModal')">&times;</span>
-            <h2>Nouveau Paiement</h2>
-            <div class="form-group">
-                <label>Date:</label>
-                <input type="date" id="paiement-date" required>
-            </div>
-            <div class="form-group">
-                <label>Type:</label>
-                <select id="paiement-type">
-                    <option value="ventes">Vente</option>
-                    <option value="achats">Achat</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Montant:</label>
-                <input type="number" id="paiement-montant" placeholder="0.00" step="0.01" required>
-            </div>
-            <div class="form-group">
-                <label>Mode:</label>
-                <select id="paiement-mode">
-                    <option value="Espèces">Espèces</option>
-                    <option value="Carte">Carte</option>
-                    <option value="Virement">Virement</option>
-                    <option value="Chèque">Chèque</option>
-                </select>
-            </div>
-            <button class="btn" onclick="savePaiement()">Enregistrer</button>
-        </div>
-    </div>
-
-    <div id="userModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('userModal')">&times;</span>
-            <h2>Nouvel Utilisateur</h2>
-            <div class="form-group">
-                <label>Nom d'affichage:</label>
-                <input type="text" id="user-nom" placeholder="Nom d'affichage" required>
-            </div>
-            <div class="form-group">
-                <label>Email:</label>
-                <input type="email" id="user-email" placeholder="email@example.com" required>
-            </div>
-            <div class="form-group">
-                <label>Rôle:</label>
-                <select id="user-role">
-                    <option value="docteur">Docteur</option>
-                    <option value="vendeuse">Vendeuse</option>
-                    <option value="admin">Admin</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Téléphone:</label>
-                <input type="tel" id="user-telephone" placeholder="Numéro de téléphone">
-            </div>
-            <button class="btn" onclick="saveUser()">Enregistrer</button>
         </div>
     </div>
 
     <script>
-        // Global data storage
-        let pharmaData = {
-            metadata: {
-                exportDate: "2025-08-28T14:30:50.812Z",
-                exportDateFr: "28 août 2025 à 15:30",
-                societeName: "PHARMACIE DRARGA",
-                version: "1.2",
-                appName: "Pharma Gestion"
-            },
-            data: {
-                achats: [
-                    {
-                        id: "7ppZ9mpi3piwsSHhYVU7",
-                        date: "2025-08-27T00:00:00.000Z",
-                        fournisseur: "Sorefa",
-                        statutPaiement: "payé",
-                        articles: [{
-                            produit: "Amoxyl 200",
-                            quantite: 25,
-                            prixAchat: 89,
-                            prixVente: 99
-                        }]
-                    }
-                ],
-                ventes: [
-                    {
-                        id: "atPgLOd5dIVxjL6uuCES",
-                        date: "2025-08-28T00:00:00.000Z",
-                        client: "Passant",
-                        montantTotal: 594,
-                        statutPaiement: "payé",
-                        articles: [{
-                            produit: "Amoxyl 200",
-                            quantite: 6,
-                            prixUnitaire: 99
-                        }]
-                    },
-                    {
-                        id: "hwekVy7fBHKMNMs0oLF6",
-                        date: "2025-08-27T00:00:00.000Z",
-                        client: "ALIM",
-                        montantTotal: 396,
-                        statutPaiement: "payé",
-                        articles: [{
-                            produit: "Amoxyl 200",
-                            quantite: 4,
-                            prixUnitaire: 99
-                        }]
-                    }
-                ],
-                stock: [
-                    {
-                        id: "0YUtJRrXVp2TeAsqIFxF",
-                        nom: "Amoxyl 200",
-                        quantite: 25,
-                        seuil: 5,
-                        prixAchat: 89,
-                        prixVente: 99,
-                        dernierFournisseur: "Sorefa",
-                        datePeremption: "2026-01-23"
-                    }
-                ],
-                paiements: [
-                    {
-                        id: "0i7qDp1ToRh7F6sDVwWj",
-                        type: "ventes",
-                        montant: 594,
-                        mode: "Espèces",
-                        date: "2025-08-28T10:11:33.000Z",
-                        createdBy: "echchaaba0178@gmail.com"
-                    },
-                    {
-                        id: "LokLLaKEkzFoHD5dNFbf",
-                        type: "ventes",
-                        montant: 396,
-                        mode: "Espèces",
-                        date: "2025-08-27T14:11:35.000Z",
-                        createdBy: "sara@gmail.com"
-                    },
-                    {
-                        id: "RbI0qRgKoRFz7jdfygmr",
-                        type: "achats",
-                        montant: 2225,
-                        mode: "Espèces",
-                        date: "2025-08-27T14:05:24.000Z",
-                        createdBy: "echchaaba0178@gmail.com"
-                    }
-                ],
-                users: [
-                    {
-                        id: "AKwsLYAvr4fhM0fzEpuZ6kbnjo33",
-                        displayName: "ech-chaaba",
-                        email: "echchaaba0178@gmail.com",
-                        role: "docteur",
-                        active: true,
-                        createdAt: "2025-08-27T13:51:40.000Z"
-                    },
-                    {
-                        id: "Wc1Ovwz6ZVWRF59zXblhzoTRPii1",
-                        displayName: "SARA CHAABA",
-                        email: "sara@gmail.com",
-                        role: "vendeuse",
-                        active: true,
-                        createdAt: "2025-08-27T13:52:48.000Z"
-                    }
-                ]
-            }
-        };
+        // Variables globales
+        let currentData = null;
+        let originalData = null;
+        let currentCollection = '';
+        let editingItem = null;
+        let editingIndex = null;
 
-        // Initialize the application
-        document.addEventListener('DOMContentLoaded', function() {
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('achat-date').value = today;
-            document.getElementById('vente-date').value = today;
-            document.getElementById('paiement-date').value = today;
+        // Vérification de la connexion
+        function updateConnectionStatus() {
+            const indicator = document.getElementById('connectionStatus');
+            const text = document.getElementById('connectionText');
             
-            updateDisplay();
-        });
-
-        // Load JSON file
-        document.getElementById('jsonFileInput').addEventListener('change', function(event) {
-            const file = event.target.files[0];
-            if (file && file.type === 'application/json') {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    try {
-                        const jsonData = JSON.parse(e.target.result);
-                        pharmaData = jsonData;
-                        updateDisplay();
-                        alert('Données importées avec succès !');
-                    } catch (error) {
-                        alert('Erreur lors de l\'importation: ' + error.message);
-                    }
-                };
-                reader.readAsText(file);
-            }
-        });
-
-        // Navigation functions
-        function showSection(sectionName) {
-            const sections = document.querySelectorAll('.content-section');
-            sections.forEach(section => {
-                section.classList.remove('active');
-            });
-
-            const tabs = document.querySelectorAll('.nav-tab');
-            tabs.forEach(tab => {
-                tab.classList.remove('active');
-            });
-
-            document.getElementById(sectionName).classList.add('active');
-            event.target.classList.add('active');
-
-            switch(sectionName) {
-                case 'dashboard':
-                    updateDashboard();
-                    break;
-                case 'achats':
-                    updateAchatsTable();
-                    break;
-                case 'ventes':
-                    updateVentesTable();
-                    break;
-                case 'stock':
-                    updateStockTable();
-                    break;
-                case 'paiements':
-                    updatePaiementsTable();
-                    break;
-                case 'users':
-                    updateUsersTable();
-                    break;
-            }
-        }
-
-        // Modal functions
-        function openModal(modalId) {
-            document.getElementById(modalId).style.display = 'block';
-        }
-
-        function closeModal(modalId) {
-            document.getElementById(modalId).style.display = 'none';
-            const modal = document.getElementById(modalId);
-            const inputs = modal.querySelectorAll('input, select');
-            inputs.forEach(input => {
-                if (input.type === 'date') {
-                    input.value = new Date().toISOString().split('T')[0];
-                } else {
-                    input.value = '';
-                }
-            });
-        }
-
-        // Close modal when clicking outside
-        window.onclick = function(event) {
-            if (event.target.classList.contains('modal')) {
-                event.target.style.display = 'none';
-            }
-        }
-
-        // Update display functions
-        function updateDisplay() {
-            updateHeaderInfo();
-            updateDashboard();
-            updateAllTables();
-        }
-
-        function updateHeaderInfo() {
-            const metadata = pharmaData.metadata || {};
-            
-            document.getElementById('societeName').textContent = metadata.societeName || 'PHARMACIE DRARGA';
-            document.getElementById('totalDocs').textContent = Object.values(pharmaData.data).reduce((sum, arr) => sum + (Array.isArray(arr) ? arr.length : 0), 0);
-            document.getElementById('exportDate').textContent = metadata.exportDateFr || 'Aujourd\'hui';
-            document.getElementById('appVersion').textContent = metadata.version || '1.2';
-        }
-
-        function updateDashboard() {
-            const data = pharmaData.data || {};
-            
-            document.getElementById('stats-achats').textContent = (data.achats || []).length;
-            document.getElementById('stats-ventes').textContent = (data.ventes || []).length;
-            document.getElementById('stats-stock').textContent = (data.stock || []).length;
-            document.getElementById('stats-paiements').textContent = (data.paiements || []).length;
-            document.getElementById('stats-users').textContent = (data.users || []).length;
-            
-            const totalCA = (data.ventes || []).reduce((sum, vente) => {
-                return sum + (vente.montantTotal || 0);
-            }, 0);
-            document.getElementById('stats-ca').textContent = totalCA.toFixed(2) + ' dhs';
-        }
-
-        function updateAllTables() {
-            updateAchatsTable();
-            updateVentesTable();
-            updateStockTable();
-            updatePaiementsTable();
-            updateUsersTable();
-        }
-
-        // Achats functions
-        function updateAchatsTable() {
-            const tbody = document.getElementById('achatsTableBody');
-            const achats = pharmaData.data.achats || [];
-            
-            tbody.innerHTML = '';
-            
-            achats.forEach(achat => {
-                const row = document.createElement('tr');
-                const totalArticles = (achat.articles || []).length;
-                const montantTotal = (achat.articles || []).reduce((sum, article) => {
-                    return sum + ((article.prixAchat || 0) * (article.quantite || 0));
-                }, 0);
-                
-                row.innerHTML = `
-                    <td>${formatDate(achat.date)}</td>
-                    <td>${achat.fournisseur || '-'}</td>
-                    <td>${totalArticles} article(s)</td>
-                    <td>${montantTotal.toFixed(2)} dhs</td>
-                    <td><span class="status-badge status-${achat.statutPaiement || 'impaye'}">${achat.statutPaiement || 'Impayé'}</span></td>
-                    <td>
-                        <button class="btn btn-warning" onclick="editAchat('${achat.id}')"><i class="fas fa-edit"></i></button>
-                        <button class="btn btn-danger" onclick="deleteAchat('${achat.id}')"><i class="fas fa-trash"></i></button>
-                    </td>
-                `;
-                tbody.appendChild(row);
-            });
-        }
-
-        function saveAchat() {
-            const modal = document.getElementById('achatModal');
-            const editId = modal.getAttribute('data-edit-id');
-            
-            const achatData = {
-                date: document.getElementById('achat-date').value,
-                fournisseur: document.getElementById('achat-fournisseur').value,
-                statutPaiement: document.getElementById('achat-statut').value
-            };
-
-            if (editId) {
-                const index = pharmaData.data.achats.findIndex(a => a.id === editId);
-                if (index !== -1) {
-                    pharmaData.data.achats[index] = {...pharmaData.data.achats[index], ...achatData};
-                    alert('Achat modifié avec succès !');
-                }
-                modal.removeAttribute('data-edit-id');
+            if (navigator.onLine) {
+                indicator.classList.add('online');
+                text.textContent = 'En ligne';
             } else {
-                const newAchat = {
-                    id: generateId(),
-                    ...achatData,
-                    articles: [],
-                    creePar: "current_user",
-                    creeParEmail: "user@example.com",
-                    timestamp: new Date().toISOString(),
-                    creeLe: new Date().toISOString()
-                };
-
-                if (!pharmaData.data.achats) {
-                    pharmaData.data.achats = [];
-                }
-                
-                pharmaData.data.achats.push(newAchat);
-                alert('Achat enregistré avec succès !');
-            }
-
-            updateDisplay();
-            closeModal('achatModal');
-        }
-
-        function deleteAchat(id) {
-            if (confirm('Êtes-vous sûr de vouloir supprimer cet achat ?')) {
-                pharmaData.data.achats = pharmaData.data.achats.filter(achat => achat.id !== id);
-                updateDisplay();
+                indicator.classList.remove('online');
+                text.textContent = 'Hors ligne';
             }
         }
 
-        function editAchat(id) {
-            const achat = pharmaData.data.achats.find(a => a.id === id);
-            if (achat) {
-                document.getElementById('achat-date').value = achat.date ? achat.date.split('T')[0] : '';
-                document.getElementById('achat-fournisseur').value = achat.fournisseur || '';
-                document.getElementById('achat-statut').value = achat.statutPaiement || 'impayé';
-                
-                document.getElementById('achatModal').setAttribute('data-edit-id', id);
-                openModal('achatModal');
-            }
-        }
-
-        // Ventes functions
-        function updateVentesTable() {
-            const tbody = document.getElementById('ventesTableBody');
-            const ventes = pharmaData.data.ventes || [];
-            
-            tbody.innerHTML = '';
-            
-            ventes.forEach(vente => {
-                const row = document.createElement('tr');
-                const totalArticles = (vente.articles || []).length;
-                
-                row.innerHTML = `
-                    <td>${formatDate(vente.date)}</td>
-                    <td>${vente.client || '-'}</td>
-                    <td>${totalArticles} article(s)</td>
-                    <td>${(vente.montantTotal || 0).toFixed(2)} dhs</td>
-                    <td><span class="status-badge status-${vente.statutPaiement || 'impaye'}">${vente.statutPaiement || 'Impayé'}</span></td>
-                    <td>
-                        <button class="btn btn-warning" onclick="editVente('${vente.id}')"><i class="fas fa-edit"></i></button>
-                        <button class="btn btn-danger" onclick="deleteVente('${vente.id}')"><i class="fas fa-trash"></i></button>
-                    </td>
-                `;
-                tbody.appendChild(row);
-            });
-        }
-
-        function saveVente() {
-            const modal = document.getElementById('venteModal');
-            const editId = modal.getAttribute('data-edit-id');
-            
-            const venteData = {
-                date: document.getElementById('vente-date').value,
-                client: document.getElementById('vente-client').value,
-                montantTotal: parseFloat(document.getElementById('vente-montant').value),
-                modePaiement: document.getElementById('vente-mode').value,
-                statutPaiement: document.getElementById('vente-statut').value
-            };
-
-            if (editId) {
-                const index = pharmaData.data.ventes.findIndex(v => v.id === editId);
-                if (index !== -1) {
-                    pharmaData.data.ventes[index] = {...pharmaData.data.ventes[index], ...venteData, updatedAt: new Date().toISOString()};
-                    alert('Vente modifiée avec succès !');
-                }
-                modal.removeAttribute('data-edit-id');
-            } else {
-                const newVente = {
-                    id: generateId(),
-                    ...venteData,
-                    articles: [],
-                    createdBy: "user@example.com",
-                    createdAt: new Date().toISOString(),
-                    updatedAt: new Date().toISOString()
-                };
-
-                if (!pharmaData.data.ventes) {
-                    pharmaData.data.ventes = [];
-                }
-                
-                pharmaData.data.ventes.push(newVente);
-                alert('Vente enregistrée avec succès !');
-            }
-
-            updateDisplay();
-            closeModal('venteModal');
-        }
-
-        function deleteVente(id) {
-            if (confirm('Êtes-vous sûr de vouloir supprimer cette vente ?')) {
-                pharmaData.data.ventes = pharmaData.data.ventes.filter(vente => vente.id !== id);
-                updateDisplay();
-            }
-        }
-
-        function editVente(id) {
-            const vente = pharmaData.data.ventes.find(v => v.id === id);
-            if (vente) {
-                document.getElementById('vente-date').value = vente.date ? vente.date.split('T')[0] : '';
-                document.getElementById('vente-client').value = vente.client || '';
-                document.getElementById('vente-montant').value = vente.montantTotal || 0;
-                document.getElementById('vente-mode').value = vente.modePaiement || 'Espèces';
-                document.getElementById('vente-statut').value = vente.statutPaiement || 'impayé';
-                
-                document.getElementById('venteModal').setAttribute('data-edit-id', id);
-                openModal('venteModal');
-            }
-        }
-
-        // Stock functions
-        function updateStockTable() {
-            const tbody = document.getElementById('stockTableBody');
-            const stock = pharmaData.data.stock || [];
-            
-            tbody.innerHTML = '';
-            
-            stock.forEach(item => {
-                const row = document.createElement('tr');
-                const lowStock = item.quantite <= item.seuil;
-                
-                row.innerHTML = `
-                    <td>${item.nom || '-'}</td>
-                    <td style="color: ${lowStock ? 'red' : 'black'}; font-weight: ${lowStock ? 'bold' : 'normal'}">${item.quantite || 0}</td>
-                    <td>${item.seuil || 0}</td>
-                    <td>${(item.prixAchat || 0).toFixed(2)} dhs</td>
-                    <td>${(item.prixVente || 0).toFixed(2)} dhs</td>
-                    <td>${item.dernierFournisseur || '-'}</td>
-                    <td>${formatDate(item.datePeremption)}</td>
-                    <td>
-                        <button class="btn btn-warning" onclick="editStock('${item.id}')"><i class="fas fa-edit"></i></button>
-                        <button class="btn btn-danger" onclick="deleteStock('${item.id}')"><i class="fas fa-trash"></i></button>
-                    </td>
-                `;
-                tbody.appendChild(row);
-            });
-        }
-
-        function saveStock() {
-            const modal = document.getElementById('stockModal');
-            const editId = modal.getAttribute('data-edit-id');
-            
-            const stockData = {
-                nom: document.getElementById('stock-nom').value,
-                quantite: parseInt(document.getElementById('stock-quantite').value),
-                seuil: parseInt(document.getElementById('stock-seuil').value),
-                prixAchat: parseFloat(document.getElementById('stock-prix-achat').value),
-                prixVente: parseFloat(document.getElementById('stock-prix-vente').value),
-                dernierFournisseur: document.getElementById('stock-fournisseur').value,
-                datePeremption: document.getElementById('stock-peremption').value
-            };
-
-            if (editId) {
-                const index = pharmaData.data.stock.findIndex(s => s.id === editId);
-                if (index !== -1) {
-                    pharmaData.data.stock[index] = {...pharmaData.data.stock[index], ...stockData};
-                    alert('Article modifié avec succès !');
-                }
-                modal.removeAttribute('data-edit-id');
-            } else {
-                const newStock = {
-                    id: generateId(),
-                    ...stockData,
-                    creePar: "current_user",
-                    creeParEmail: "user@example.com",
-                    creeLe: new Date().toISOString()
-                };
-
-                if (!pharmaData.data.stock) {
-                    pharmaData.data.stock = [];
-                }
-                
-                pharmaData.data.stock.push(newStock);
-                alert('Article ajouté au stock avec succès !');
-            }
-
-            updateDisplay();
-            closeModal('stockModal');
-        }
-
-        function deleteStock(id) {
-            if (confirm('Êtes-vous sûr de vouloir supprimer cet article du stock ?')) {
-                pharmaData.data.stock = pharmaData.data.stock.filter(item => item.id !== id);
-                updateDisplay();
-            }
-        }
-
-        function editStock(id) {
-            const stock = pharmaData.data.stock.find(s => s.id === id);
-            if (stock) {
-                document.getElementById('stock-nom').value = stock.nom || '';
-                document.getElementById('stock-quantite').value = stock.quantite || 0;
-                document.getElementById('stock-seuil').value = stock.seuil || 5;
-                document.getElementById('stock-prix-achat').value = stock.prixAchat || 0;
-                document.getElementById('stock-prix-vente').value = stock.prixVente || 0;
-                document.getElementById('stock-fournisseur').value = stock.dernierFournisseur || '';
-                document.getElementById('stock-peremption').value = stock.datePeremption ? stock.datePeremption.split('T')[0] : '';
-                
-                document.getElementById('stockModal').setAttribute('data-edit-id', id);
-                openModal('stockModal');
-            }
-        }
-
-        // Paiements functions
-        function updatePaiementsTable() {
-            const tbody = document.getElementById('paiementsTableBody');
-            const paiements = pharmaData.data.paiements || [];
-            
-            tbody.innerHTML = '';
-            
-            paiements.forEach(paiement => {
-                const row = document.createElement('tr');
-                
-                row.innerHTML = `
-                    <td>${formatDate(paiement.date)}</td>
-                    <td><span class="status-badge ${paiement.type === 'ventes' ? 'status-paye' : 'status-impaye'}">${paiement.type || '-'}</span></td>
-                    <td>${(paiement.montant || 0).toFixed(2)} dhs</td>
-                    <td>${paiement.mode || '-'}</td>
-                    <td>${paiement.createdBy || '-'}</td>
-                    <td>
-                        <button class="btn btn-warning" onclick="editPaiement('${paiement.id}')"><i class="fas fa-edit"></i></button>
-                        <button class="btn btn-danger" onclick="deletePaiement('${paiement.id}')"><i class="fas fa-trash"></i></button>
-                    </td>
-                `;
-                tbody.appendChild(row);
-            });
-        }
-
-        function savePaiement() {
-            const modal = document.getElementById('paiementModal');
-            const editId = modal.getAttribute('data-edit-id');
-            
-            const paiementData = {
-                date: document.getElementById('paiement-date').value,
-                type: document.getElementById('paiement-type').value,
-                montant: parseFloat(document.getElementById('paiement-montant').value),
-                mode: document.getElementById('paiement-mode').value
-            };
-
-            if (editId) {
-                const index = pharmaData.data.paiements.findIndex(p => p.id === editId);
-                if (index !== -1) {
-                    pharmaData.data.paiements[index] = {...pharmaData.data.paiements[index], ...paiementData};
-                    alert('Paiement modifié avec succès !');
-                }
-                modal.removeAttribute('data-edit-id');
-            } else {
-                const newPaiement = {
-                    id: generateId(),
-                    ...paiementData,
-                    createdBy: "user@example.com",
-                    docId: generateId()
-                };
-
-                if (!pharmaData.data.paiements) {
-                    pharmaData.data.paiements = [];
-                }
-                
-                pharmaData.data.paiements.push(newPaiement);
-                alert('Paiement enregistré avec succès !');
-            }
-
-            updateDisplay();
-            closeModal('paiementModal');
-        }
-
-        function deletePaiement(id) {
-            if (confirm('Êtes-vous sûr de vouloir supprimer ce paiement ?')) {
-                pharmaData.data.paiements = pharmaData.data.paiements.filter(paiement => paiement.id !== id);
-                updateDisplay();
-            }
-        }
-
-        function editPaiement(id) {
-            const paiement = pharmaData.data.paiements.find(p => p.id === id);
-            if (paiement) {
-                document.getElementById('paiement-date').value = paiement.date ? paiement.date.split('T')[0] : '';
-                document.getElementById('paiement-type').value = paiement.type || 'ventes';
-                document.getElementById('paiement-montant').value = paiement.montant || 0;
-                document.getElementById('paiement-mode').value = paiement.mode || 'Espèces';
-                
-                document.getElementById('paiementModal').setAttribute('data-edit-id', id);
-                openModal('paiementModal');
-            }
-        }
-
-        // Users functions
-        function updateUsersTable() {
-            const tbody = document.getElementById('usersTableBody');
-            const users = pharmaData.data.users || [];
-            
-            tbody.innerHTML = '';
-            
-            users.forEach(user => {
-                const row = document.createElement('tr');
-                
-                row.innerHTML = `
-                    <td>${user.displayName || user.nom || '-'}</td>
-                    <td>${user.email || '-'}</td>
-                    <td><span class="status-badge status-paye">${user.role || '-'}</span></td>
-                    <td><span class="status-badge ${user.active !== false ? 'status-paye' : 'status-impaye'}">${user.active !== false ? 'Actif' : 'Inactif'}</span></td>
-                    <td>${formatDate(user.derniereConnexion || user.createdAt)}</td>
-                    <td>
-                        <button class="btn btn-warning" onclick="editUser('${user.id}')"><i class="fas fa-edit"></i></button>
-                        <button class="btn btn-danger" onclick="deleteUser('${user.id}')"><i class="fas fa-trash"></i></button>
-                    </td>
-                `;
-                tbody.appendChild(row);
-            });
-        }
-
-        function saveUser() {
-            const modal = document.getElementById('userModal');
-            const editId = modal.getAttribute('data-edit-id');
-            
-            const userData = {
-                displayName: document.getElementById('user-nom').value,
-                email: document.getElementById('user-email').value,
-                role: document.getElementById('user-role').value,
-                telephone: document.getElementById('user-telephone').value
-            };
-
-            if (editId) {
-                const index = pharmaData.data.users.findIndex(u => u.id === editId);
-                if (index !== -1) {
-                    pharmaData.data.users[index] = {...pharmaData.data.users[index], ...userData, modifiedAt: new Date().toISOString()};
-                    alert('Utilisateur modifié avec succès !');
-                }
-                modal.removeAttribute('data-edit-id');
-            } else {
-                const newUser = {
-                    id: generateId(),
-                    ...userData,
-                    active: true,
-                    createdAt: new Date().toISOString(),
-                    modifiedAt: new Date().toISOString(),
-                    createdBy: "admin"
-                };
-
-                if (!pharmaData.data.users) {
-                    pharmaData.data.users = [];
-                }
-                
-                pharmaData.data.users.push(newUser);
-                alert('Utilisateur créé avec succès !');
-            }
-
-            updateDisplay();
-            closeModal('userModal');
-        }
-
-        function deleteUser(id) {
-            if (confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?')) {
-                pharmaData.data.users = pharmaData.data.users.filter(user => user.id !== id);
-                updateDisplay();
-            }
-        }
-
-        function editUser(id) {
-            const user = pharmaData.data.users.find(u => u.id === id);
-            if (user) {
-                document.getElementById('user-nom').value = user.displayName || user.nom || '';
-                document.getElementById('user-email').value = user.email || '';
-                document.getElementById('user-role').value = user.role || 'vendeuse';
-                document.getElementById('user-telephone').value = user.telephone || '';
-                
-                document.getElementById('userModal').setAttribute('data-edit-id', id);
-                openModal('userModal');
-            }
-        }
-
-        // Utility functions
+        // Génération d'ID unique
         function generateId() {
             return 'id_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
         }
 
-        function formatDate(dateString) {
-            if (!dateString) return '-';
+        // Affichage des alertes
+        function showAlert(message, type = 'info') {
+            const alertsContainer = document.getElementById('alerts');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.textContent = message;
+            
+            alertsContainer.appendChild(alert);
+            
+            setTimeout(() => {
+                alert.remove();
+            }, 5000);
+        }
+
+        // Affichage de la progression
+        function showProgress(text, percentage = 0) {
+            const modal = document.getElementById('progressModal');
+            const progressFill = document.getElementById('progressFill');
+            const progressText = document.getElementById('progressText');
+            
+            modal.style.display = 'block';
+            progressFill.style.width = percentage + '%';
+            progressText.textContent = text;
+        }
+
+        function hideProgress() {
+            document.getElementById('progressModal').style.display = 'none';
+        }
+
+        // Sauvegarde des données
+        function saveData() {
+            if (currentData) {
+                localStorage.setItem('pharmaData', JSON.stringify(currentData));
+                localStorage.setItem('lastModified', new Date().toISOString());
+            }
+        }
+
+        // Importation du fichier JSON
+        document.getElementById('importFile').addEventListener('change', async function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            showProgress('Lecture du fichier...', 10);
+
             try {
-                const date = new Date(dateString);
-                return date.toLocaleDateString('fr-FR');
-            } catch (e) {
-                return '-';
-            }
-        }
-
-        function searchTable(tableId, searchTerm) {
-            const table = document.getElementById(tableId);
-            const rows = table.querySelectorAll('tbody tr');
-            
-            searchTerm = searchTerm.toLowerCase();
-            
-            rows.forEach(row => {
-                const cells = row.querySelectorAll('td');
-                let found = false;
+                const text = await file.text();
+                showProgress('Analyse des données...', 30);
                 
-                cells.forEach(cell => {
-                    if (cell.textContent.toLowerCase().includes(searchTerm)) {
-                        found = true;
+                const data = JSON.parse(text);
+                showProgress('Validation des données...', 50);
+                
+                // Validation de la structure
+                if (!data || typeof data !== 'object') {
+                    throw new Error('Fichier JSON invalide');
+                }
+                
+                // Initialisation des structures si nécessaire
+                if (!data.metadata) {
+                    data.metadata = {};
+                }
+                
+                if (!data.data) {
+                    data.data = {};
+                }
+                
+                // Initialisation des collections si elles n'existent pas
+                const collections = ['achats', 'ventes', 'stock', 'paiements'];
+                collections.forEach(col => {
+                    if (!data.data[col]) {
+                        data.data[col] = [];
                     }
                 });
+
+                showProgress('Sauvegarde en localStorage...', 70);
                 
-                row.style.display = found ? '' : 'none';
-            });
-        }
-
-        // Import/Export functions
-        function exportData() {
-            pharmaData.metadata.exportDate = new Date().toISOString();
-            pharmaData.metadata.exportDateFr = new Date().toLocaleDateString('fr-FR') + ' à ' + new Date().toLocaleTimeString('fr-FR');
-            
-            const dataStr = JSON.stringify(pharmaData, null, 2);
-            const dataBlob = new Blob([dataStr], {type: 'application/json'});
-            
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(dataBlob);
-            link.download = `pharma-gestion-backup-${new Date().toISOString().split('T')[0]}.json`;
-            link.click();
-        }
-
-        function resetData() {
-            if (confirm('Êtes-vous sûr de vouloir réinitialiser toutes les données ? Cette action est irréversible.')) {
-                pharmaData = {
-                    metadata: {
-                        exportDate: new Date().toISOString(),
-                        exportDateFr: new Date().toLocaleDateString('fr-FR'),
-                        societeName: "NOUVELLE PHARMACIE",
-                        version: "1.2",
-                        appName: "Pharma Gestion"
-                    },
-                    data: {
-                        achats: [],
-                        ventes: [],
-                        stock: [],
-                        paiements: [],
-                        users: []
-                    }
-                };
-                updateDisplay();
-                alert('Données réinitialisées avec succès !');
-            }
-        }
-
-        // Keyboard shortcuts
-        document.addEventListener('keydown', function(e) {
-            if ((e.ctrlKey || e.metaKey) && e.key === 's') {
-                e.preventDefault();
-                exportData();
-            }
-            
-            if (e.key === 'Escape') {
-                const openModals = document.querySelectorAll('.modal[style*="block"]');
-                openModals.forEach(modal => {
-                    modal.style.display = 'none';
-                });
+                // Sauvegarde en localStorage
+                localStorage.setItem('pharmaData', JSON.stringify(data));
+                localStorage.setItem('pharmaDataOriginal', JSON.stringify(data));
+                localStorage.setItem('lastImport', new Date().toISOString());
+                
+                currentData = data;
+                originalData = JSON.parse(JSON.stringify(data));
+                
+                showProgress('Génération de l\'interface...', 90);
+                
+                updateUI();
+                
+                showProgress('Terminé!', 100);
+                
+                setTimeout(() => {
+                    hideProgress();
+                    showAlert('Données importées avec succès!', 'success');
+                }, 500);
+                
+            } catch (error) {
+                hideProgress();
+                showAlert('Erreur lors de l\'importation: ' + error.message, 'error');
             }
         });
 
-        // Initialize display on page load
-        updateDisplay();
+        // Mise à jour de l'interface utilisateur
+        function updateUI() {
+            if (!currentData || !currentData.data) return;
+
+            // Vérifications de sécurité
+            const metadata = currentData.metadata || {};
+            const statistics = currentData.statistics || {};
+
+            // Calcul du nombre total de documents
+            let totalDocs = 0;
+            Object.values(currentData.data).forEach(collection => {
+                if (Array.isArray(collection)) {
+                    totalDocs += collection.length;
+                }
+            });
+
+            document.getElementById('dataStatus').textContent = 
+                `${totalDocs} documents chargés`;
+            
+            const lastImport = localStorage.getItem('lastImport');
+            if (lastImport) {
+                document.getElementById('lastSync').textContent = 
+                    `Importé: ${new Date(lastImport).toLocaleString()}`;
+            }
+
+            // Affichage des résumés
+            createSummaryCards();
+            
+            // Affichage des onglets
+            createTabs();
+            
+            // Activation du bouton d'export
+            document.getElementById('exportBtn').disabled = false;
+            
+            // Affichage des sections
+            document.getElementById('dataSummary').style.display = 'grid';
+            document.getElementById('dataTabs').style.display = 'block';
+        }
+
+        // Création des cartes de résumé
+        function createSummaryCards() {
+            const container = document.getElementById('dataSummary');
+            container.innerHTML = '';
+
+            // Vérifications de sécurité
+            const metadata = currentData.metadata || {};
+            const statistics = currentData.statistics || {};
+            
+            // Calcul des statistiques réelles
+            let totalDocuments = 0;
+            const collectionsInfo = {};
+            
+            Object.entries(currentData.data).forEach(([key, value]) => {
+                if (Array.isArray(value)) {
+                    totalDocuments += value.length;
+                    collectionsInfo[key] = value.length;
+                }
+            });
+
+            // Informations générales
+            const generalCard = document.createElement('div');
+            generalCard.className = 'summary-card';
+            generalCard.innerHTML = `
+                <h3>Informations Générales</h3>
+                <div class="summary-item">
+                    <span class="summary-label">Société:</span>
+                    <span class="summary-value">${metadata.societeName || 'Non spécifié'}</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">Total documents:</span>
+                    <span class="summary-value">${totalDocuments}</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">Collections:</span>
+                    <span class="summary-value">${Object.keys(collectionsInfo).length}</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">Exporté par:</span>
+                    <span class="summary-value">${metadata.exportedByName || 'Non spécifié'}</span>
+                </div>
+            `;
+            container.appendChild(generalCard);
+
+            // Statistiques par collection
+            Object.entries(collectionsInfo).forEach(([key, count]) => {
+                const card = document.createElement('div');
+                card.className = 'summary-card';
+                card.innerHTML = `
+                    <h3>${key.charAt(0).toUpperCase() + key.slice(1)}</h3>
+                    <div class="summary-item">
+                        <span class="summary-label">Nombre d'éléments:</span>
+                        <span class="summary-value">${count}</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Dernière modification:</span>
+                        <span class="summary-value">${localStorage.getItem('lastModified') ? new Date(localStorage.getItem('lastModified')).toLocaleDateString() : 'N/A'}</span>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Création des onglets
+        function createTabs() {
+            const tabButtons = document.getElementById('tabButtons');
+            const tabContents = document.getElementById('tabContents');
+            
+            tabButtons.innerHTML = '';
+            tabContents.innerHTML = '';
+
+            if (!currentData || !currentData.data || typeof currentData.data !== 'object') {
+                return;
+            }
+
+            const collections = Object.keys(currentData.data).filter(key => 
+                currentData.data[key] && Array.isArray(currentData.data[key])
+            );
+            
+            if (collections.length === 0) {
+                const content = document.createElement('div');
+                content.className = 'tab-content active';
+                content.innerHTML = '<p>Aucune collection de données disponible.</p>';
+                tabContents.appendChild(content);
+                return;
+            }
+            
+            collections.forEach((collection, index) => {
+                // Bouton d'onglet
+                const button = document.createElement('button');
+                button.className = `tab-button ${index === 0 ? 'active' : ''}`;
+                button.textContent = collection.charAt(0).toUpperCase() + collection.slice(1);
+                button.onclick = (e) => switchTab(collection, e);
+                tabButtons.appendChild(button);
+
+                // Contenu d'onglet
+                const content = document.createElement('div');
+                content.className = `tab-content ${index === 0 ? 'active' : ''}`;
+                content.id = `tab-${collection}`;
+                content.innerHTML = createTableForCollection(collection);
+                tabContents.appendChild(content);
+            });
+
+            // Définir la collection courante
+            if (collections.length > 0) {
+                currentCollection = collections[0];
+            }
+        }
+
+        // Définir les colonnes prioritaires pour chaque collection
+        function getPriorityColumns(collection) {
+            const columnPriorities = {
+                achats: ['date', 'fournisseur', 'totalTTC', 'statutPaiement', 'articles'],
+                ventes: ['date', 'client', 'totalTTC', 'modePaiement', 'statutPaiement'],
+                stock: ['nom', 'quantite', 'prixVente', 'datePeremption', 'seuil'],
+                paiements: ['date', 'montant', 'mode', 'type', 'docId'],
+                produits: ['nom', 'categorie', 'prixVente', 'stock', 'fournisseur']
+            };
+            
+            return columnPriorities[collection] || null;
+        }
+
+        // Formater les en-têtes de colonnes
+        function formatColumnHeader(key) {
+            const headerMap = {
+                'nom': 'Nom',
+                'date': 'Date',
+                'client': 'Client',
+                'fournisseur': 'Fournisseur',
+                'totalTTC': 'Total TTC',
+                'totalHT': 'Total HT',
+                'statutPaiement': 'Statut',
+                'modePaiement': 'Mode paiement',
+                'quantite': 'Quantité',
+                'prixVente': 'Prix vente',
+                'prixAchat': 'Prix achat',
+                'datePeremption': 'Péremption',
+                'seuil': 'Seuil',
+                'montant': 'Montant',
+                'mode': 'Mode',
+                'type': 'Type',
+                'docId': 'Document',
+                'articles': 'Articles',
+                'categorie': 'Catégorie',
+                'stock': 'Stock'
+            };
+            
+            return headerMap[key] || key.charAt(0).toUpperCase() + key.slice(1);
+        }
+
+        // Création d'un tableau pour une collection
+        function createTableForCollection(collection) {
+            const data = currentData.data[collection];
+            
+            // Boutons d'action selon la collection
+            let actionButtons = `
+                <button class="btn btn-primary" onclick="openAddModal('${collection}')">
+                    Ajouter ${collection.slice(0, -1)}
+                </button>
+            `;
+            
+            // Ajouter un bouton spécial pour créer des produits
+            if (collection === 'stock') {
+                actionButtons += `
+                    <button class="btn btn-success" onclick="openProductModal()">
+                        Nouveau Produit
+                    </button>
+                `;
+            }
+            
+            if (!data || !Array.isArray(data) || data.length === 0) {
+                return `
+                    <div class="table-actions">
+                        ${actionButtons}
+                    </div>
+                    <p>Aucune donnée disponible pour cette collection.</p>
+                `;
+            }
+
+            // Obtenir les colonnes prioritaires
+            let displayKeys = getPriorityColumns(collection);
+            
+            // Si pas de colonnes prédéfinies, prendre les premières clés disponibles
+            if (!displayKeys) {
+                const firstValidItem = data.find(item => item && typeof item === 'object');
+                if (!firstValidItem) {
+                    return '<p>Aucune donnée valide dans cette collection.</p>';
+                }
+                const allKeys = Object.keys(firstValidItem).filter(key => 
+                    !key.startsWith('_') && 
+                    !['id', 'creeLe', 'creeParEmail', 'modifieLe', 'modifieParEmail', 'societeId', 'timestamp'].includes(key)
+                );
+                displayKeys = allKeys.slice(0, 6);
+            } else {
+                // Filtrer les colonnes qui existent réellement dans les données
+                const firstValidItem = data.find(item => item && typeof item === 'object');
+                if (firstValidItem) {
+                    displayKeys = displayKeys.filter(key => key in firstValidItem);
+                }
+            }
+            
+            let html = `
+                <div class="table-actions">
+                    ${actionButtons}
+                </div>
+                <div class="table-container">
+                    <h3>${collection.charAt(0).toUpperCase() + collection.slice(1)} (${data.length} éléments)</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                ${displayKeys.map(key => `<th>${formatColumnHeader(key)}</th>`).join('')}
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+
+            data.slice(0, 100).forEach((item, index) => {
+                if (item && typeof item === 'object') {
+                    html += '<tr>';
+                    displayKeys.forEach(key => {
+                        let value = item[key];
+                        
+                        // Formatage spécial selon le type de donnée
+                        if (value === null || value === undefined) {
+                            value = '-';
+                        } else if (key === 'articles' && Array.isArray(value)) {
+                            // Pour les articles, afficher les noms des produits
+                            const productNames = value.map(a => a.produit || 'N/A').slice(0, 3).join(', ');
+                            value = productNames + (value.length > 3 ? '...' : '');
+                        } else if (key === 'date' || key === 'datePeremption') {
+                            // Formater les dates
+                            try {
+                                value = new Date(value).toLocaleDateString('fr-FR');
+                            } catch(e) {
+                                value = String(value);
+                            }
+                        } else if (key === 'totalTTC' || key === 'totalHT' || key === 'montant' || key === 'prixVente' || key === 'prixAchat') {
+                            // Formater les montants
+                            value = parseFloat(value).toFixed(2) + ' DHS';
+                        } else if (key === 'quantite' || key === 'stock' || key === 'seuil') {
+                            // Formater les quantités
+                            value = parseInt(value) || 0;
+                            if (key === 'quantite' && item.seuil && value <= item.seuil) {
+                                value = `<span style="color: red; font-weight: bold;">${value}</span>`;
+                            }
+                        } else if (key === 'statutPaiement') {
+                            // Colorer le statut de paiement
+                            const color = value === 'payé' ? 'green' : value === 'impayé' ? 'red' : 'orange';
+                            value = `<span style="color: ${color}; font-weight: bold;">${value}</span>`;
+                        } else if (typeof value === 'object' && value !== null) {
+                            value = '[Objet]';
+                        } else {
+                            value = String(value).substring(0, 50);
+                        }
+                        
+                        html += `<td>${value}</td>`;
+                    });
+                    html += `
+                        <td class="action-buttons">
+                            <button class="btn btn-sm btn-secondary" onclick="openEditModal('${collection}', ${index})">
+                                Modifier
+                            </button>
+                            <button class="btn btn-sm btn-danger" onclick="confirmDelete('${collection}', ${index})">
+                                Supprimer
+                            </button>
+                        </td>
+                    `;
+                    html += '</tr>';
+                }
+            });
+
+            html += `
+                        </tbody>
+                    </table>
+                </div>
+            `;
+
+            if (data.length > 100) {
+                html += `<p><em>Affichage des 100 premiers éléments sur ${data.length} au total.</em></p>`;
+            }
+
+            return html;
+        }
+
+        // Changement d'onglet
+        function switchTab(tabName, event) {
+            // Désactiver tous les boutons et contenus
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            // Activer le bouton et contenu sélectionné
+            if (event && event.target) {
+                event.target.classList.add('active');
+            }
+            const tabContent = document.getElementById(`tab-${tabName}`);
+            if (tabContent) {
+                tabContent.classList.add('active');
+            }
+            
+            currentCollection = tabName;
+        }
+
+        // Obtenir la liste des produits disponibles
+        function getAvailableProducts() {
+            const products = [];
+            if (currentData && currentData.data && currentData.data.stock) {
+                currentData.data.stock.forEach(item => {
+                    if (item && item.nom) {
+                        products.push({
+                            nom: item.nom,
+                            prixAchat: item.prixAchat || 0,
+                            prixVente: item.prixVente || 0,
+                            quantite: item.quantite || 0
+                        });
+                    }
+                });
+            }
+            return products;
+        }
+
+        // Créer une liste déroulante de produits
+        function createProductSelect(selectedProduct = '') {
+            const products = getAvailableProducts();
+            let options = '<option value="">-- Sélectionner ou saisir un produit --</option>';
+            
+            products.forEach(product => {
+                const selected = product.nom === selectedProduct ? 'selected' : '';
+                options += `<option value="${product.nom}" ${selected} data-prix-achat="${product.prixAchat}" data-prix-vente="${product.prixVente}" data-stock="${product.quantite}">${product.nom} (Stock: ${product.quantite})</option>`;
+            });
+            
+            return options;
+        }
+
+        // Templates de formulaires par collection
+        function getFormTemplate(collection, item = null) {
+            const templates = {
+                achats: `
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Date</label>
+                            <input type="date" id="date" value="${item?.date ? item.date.split('T')[0] : new Date().toISOString().split('T')[0]}" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Fournisseur</label>
+                            <input type="text" id="fournisseur" value="${item?.fournisseur || ''}" placeholder="Nom du fournisseur" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Statut Paiement</label>
+                            <select id="statutPaiement">
+                                <option value="payé" ${item?.statutPaiement === 'payé' ? 'selected' : ''}>Payé</option>
+                                <option value="impayé" ${item?.statutPaiement === 'impayé' ? 'selected' : ''}>Impayé</option>
+                                <option value="partiel" ${item?.statutPaiement === 'partiel' ? 'selected' : ''}>Partiel</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Remise Globale (%)</label>
+                            <input type="number" id="remiseGlobale" value="${item?.remiseGlobale || 0}" min="0" max="100" step="0.01">
+                        </div>
+                    </div>
+                    <h4>Articles</h4>
+                    <div class="alert alert-info">
+                        Sélectionnez un produit existant ou saisissez un nouveau nom de produit
+                    </div>
+                    <div id="articlesContainer">
+                        ${item?.articles && item.articles.length > 0 ? item.articles.map((article, i) => createArticleForm(article, i)).join('') : createArticleForm(null, 0)}
+                    </div>
+                    <button type="button" class="btn btn-secondary" onclick="addArticle()">Ajouter Article</button>
+                    <div class="total-info" id="totalInfo">
+                        Total: 0 DHS
+                    </div>
+                `,
+                ventes: `
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Date</label>
+                            <input type="date" id="date" value="${item?.date ? item.date.split('T')[0] : new Date().toISOString().split('T')[0]}" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Client</label>
+                            <input type="text" id="client" value="${item?.client || ''}" placeholder="Nom du client" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Mode de Paiement</label>
+                            <select id="modePaiement">
+                                <option value="Espèces" ${item?.modePaiement === 'Espèces' ? 'selected' : ''}>Espèces</option>
+                                <option value="Carte" ${item?.modePaiement === 'Carte' ? 'selected' : ''}>Carte</option>
+                                <option value="Chèque" ${item?.modePaiement === 'Chèque' ? 'selected' : ''}>Chèque</option>
+                                <option value="Virement" ${item?.modePaiement === 'Virement' ? 'selected' : ''}>Virement</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Statut Paiement</label>
+                            <select id="statutPaiement">
+                                <option value="payé" ${item?.statutPaiement === 'payé' ? 'selected' : ''}>Payé</option>
+                                <option value="impayé" ${item?.statutPaiement === 'impayé' ? 'selected' : ''}>Impayé</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Notes</label>
+                            <textarea id="notes" rows="3" placeholder="Notes additionnelles...">${item?.notes || ''}</textarea>
+                        </div>
+                    </div>
+                    <h4>Articles vendus</h4>
+                    <div class="alert alert-info">
+                        Sélectionnez des produits du stock existant. Le stock sera automatiquement mis à jour.
+                    </div>
+                    <div id="articlesContainer">
+                        ${item?.articles && item.articles.length > 0 ? item.articles.map((article, i) => createVenteArticleForm(article, i)).join('') : createVenteArticleForm(null, 0)}
+                    </div>
+                    <button type="button" class="btn btn-secondary" onclick="addVenteArticle()">Ajouter Article</button>
+                    <div class="total-info" id="totalInfo">
+                        Total: 0 DHS
+                    </div>
+                `,
+                stock: `
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Nom du produit</label>
+                            <input type="text" id="nom" value="${item?.nom || ''}" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Quantité</label>
+                            <input type="number" id="quantite" value="${item?.quantite || 0}" min="0" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Prix d'achat</label>
+                            <input type="number" id="prixAchat" value="${item?.prixAchat || 0}" min="0" step="0.01" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Prix de vente</label>
+                            <input type="number" id="prixVente" value="${item?.prixVente || 0}" min="0" step="0.01" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Date de péremption</label>
+                            <input type="date" id="datePeremption" value="${item?.datePeremption ? item.datePeremption.split('T')[0] : ''}" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Dernier fournisseur</label>
+                            <input type="text" id="dernierFournisseur" value="${item?.dernierFournisseur || ''}" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Seuil d'alerte</label>
+                            <input type="number" id="seuil" value="${item?.seuil || 5}" min="0" required>
+                        </div>
+                    </div>
+                `,
+                paiements: `
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Date</label>
+                            <input type="date" id="date" value="${item?.date ? item.date.split('T')[0] : new Date().toISOString().split('T')[0]}" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Montant</label>
+                            <input type="number" id="montant" value="${item?.montant || 0}" min="0" step="0.01" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Mode de paiement</label>
+                            <select id="mode">
+                                <option value="Espèces" ${item?.mode === 'Espèces' ? 'selected' : ''}>Espèces</option>
+                                <option value="Carte" ${item?.mode === 'Carte' ? 'selected' : ''}>Carte</option>
+                                <option value="Chèque" ${item?.mode === 'Chèque' ? 'selected' : ''}>Chèque</option>
+                                <option value="Virement" ${item?.mode === 'Virement' ? 'selected' : ''}>Virement</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Type</label>
+                            <select id="type">
+                                <option value="ventes" ${item?.type === 'ventes' ? 'selected' : ''}>Ventes</option>
+                                <option value="achats" ${item?.type === 'achats' ? 'selected' : ''}>Achats</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Document ID</label>
+                            <input type="text" id="docId" value="${item?.docId || ''}" placeholder="ID du document associé">
+                        </div>
+                    </div>
+                `
+            };
+
+            // Formulaire par défaut pour les collections non définies
+            const defaultTemplate = `
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Nom</label>
+                        <input type="text" id="nom" value="${item?.nom || ''}" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea id="description" rows="3">${item?.description || ''}</textarea>
+                    </div>
+                </div>
+            `;
+
+            return templates[collection] || defaultTemplate;
+        }
+
+        // Formulaire pour un article d'achat
+        function createArticleForm(article = null, index = 0) {
+            const productOptions = createProductSelect(article?.produit || '');
+            return `
+                <div class="article-form" data-index="${index}" style="border: 1px solid #ddd; padding: 15px; margin: 10px 0; border-radius: 8px;">
+                    <h5>Article ${index + 1}</h5>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Produit</label>
+                            <input type="text" name="produit" value="${article?.produit || ''}" list="productList${index}" 
+                                   placeholder="Sélectionner ou saisir un produit" required 
+                                   onchange="updateProductDetails(this, ${index}); calculateTotal()">
+                            <datalist id="productList${index}">
+                                ${getAvailableProducts().map(p => `<option value="${p.nom}">${p.nom}</option>`).join('')}
+                            </datalist>
+                        </div>
+                        <div class="form-group">
+                            <label>Numéro de lot</label>
+                            <input type="text" name="numeroLot" value="${article?.numeroLot || ''}" placeholder="Ex: LOT2024001">
+                        </div>
+                        <div class="form-group">
+                            <label>Quantité</label>
+                            <input type="number" name="quantite" value="${article?.quantite || 1}" min="1" required onchange="calculateTotal()">
+                        </div>
+                        <div class="form-group">
+                            <label>Prix d'achat unitaire</label>
+                            <input type="number" name="prixAchat" id="prixAchat${index}" value="${article?.prixAchat || 0}" min="0" step="0.01" required onchange="calculateTotal()">
+                        </div>
+                        <div class="form-group">
+                            <label>Prix de vente unitaire</label>
+                            <input type="number" name="prixVente" id="prixVente${index}" value="${article?.prixVente || 0}" min="0" step="0.01" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Date de péremption</label>
+                            <input type="date" name="datePeremption" value="${article?.datePeremption ? article.datePeremption.split('T')[0] : ''}">
+                        </div>
+                    </div>
+                    ${index > 0 ? '<button type="button" class="btn btn-sm btn-danger" onclick="removeArticle(this)">Supprimer cet article</button>' : ''}
+                </div>
+            `;
+        }
+
+        // Formulaire pour un article de vente
+        function createVenteArticleForm(article = null, index = 0) {
+            return `
+                <div class="article-form" data-index="${index}" style="border: 1px solid #ddd; padding: 15px; margin: 10px 0; border-radius: 8px;">
+                    <h5>Article ${index + 1}</h5>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Produit</label>
+                            <input type="text" name="produit" value="${article?.produit || ''}" list="productListVente${index}" 
+                                   placeholder="Sélectionner un produit" required 
+                                   onchange="updateVenteProductDetails(this, ${index}); calculateTotal()">
+                            <datalist id="productListVente${index}">
+                                ${getAvailableProducts().map(p => `<option value="${p.nom}">${p.nom} (Stock: ${p.quantite})</option>`).join('')}
+                            </datalist>
+                        </div>
+                        <div class="form-group">
+                            <label>Quantité</label>
+                            <input type="number" name="quantite" id="quantiteVente${index}" value="${article?.quantite || 1}" min="1" required onchange="calculateTotal()">
+                            <small id="stockInfo${index}" style="color: gray;"></small>
+                        </div>
+                        <div class="form-group">
+                            <label>Prix unitaire</label>
+                            <input type="number" name="prixUnitaire" id="prixUnitaireVente${index}" value="${article?.prixUnitaire || 0}" min="0" step="0.01" required onchange="calculateTotal()">
+                        </div>
+                        <div class="form-group">
+                            <label>Remise (%)</label>
+                            <input type="number" name="remise" value="${article?.remise || 0}" min="0" max="100" step="0.01" onchange="calculateTotal()">
+                        </div>
+                        <div class="form-group">
+                            <label>Fournisseur</label>
+                            <input type="text" name="fournisseur" value="${article?.fournisseur || ''}" placeholder="Nom du fournisseur">
+                        </div>
+                        <div class="form-group">
+                            <label>Numéro de lot</label>
+                            <input type="text" name="numeroLot" value="${article?.numeroLot || ''}" placeholder="Ex: LOT2024001">
+                        </div>
+                    </div>
+                    ${index > 0 ? '<button type="button" class="btn btn-sm btn-danger" onclick="removeArticle(this)">Supprimer cet article</button>' : ''}
+                </div>
+            `;
+        }
+
+        // Mise à jour des détails du produit sélectionné (achat)
+        function updateProductDetails(input, index) {
+            const productName = input.value;
+            const products = getAvailableProducts();
+            const product = products.find(p => p.nom === productName);
+            
+            if (product) {
+                const prixAchatInput = document.getElementById(`prixAchat${index}`);
+                const prixVenteInput = document.getElementById(`prixVente${index}`);
+                
+                if (prixAchatInput && product.prixAchat) {
+                    prixAchatInput.value = product.prixAchat;
+                }
+                if (prixVenteInput && product.prixVente) {
+                    prixVenteInput.value = product.prixVente;
+                }
+            }
+        }
+
+        // Mise à jour des détails du produit sélectionné (vente)
+        function updateVenteProductDetails(input, index) {
+            const productName = input.value;
+            const products = getAvailableProducts();
+            const product = products.find(p => p.nom === productName);
+            
+            if (product) {
+                const prixUnitaireInput = document.getElementById(`prixUnitaireVente${index}`);
+                const stockInfo = document.getElementById(`stockInfo${index}`);
+                const quantiteInput = document.getElementById(`quantiteVente${index}`);
+                
+                if (prixUnitaireInput && product.prixVente) {
+                    prixUnitaireInput.value = product.prixVente;
+                }
+                
+                if (stockInfo) {
+                    stockInfo.textContent = `Stock disponible: ${product.quantite}`;
+                    if (product.quantite <= 5) {
+                        stockInfo.style.color = 'red';
+                        stockInfo.textContent += ' (Stock faible!)';
+                    } else {
+                        stockInfo.style.color = 'green';
+                    }
+                }
+                
+                if (quantiteInput) {
+                    quantiteInput.max = product.quantite;
+                }
+            }
+        }
+
+        // Ouvrir modal pour nouveau produit
+        function openProductModal() {
+            const modalHtml = `
+                <div id="productModal" class="modal" style="display: block;">
+                    <div class="modal-content">
+                        <span class="close" onclick="closeProductModal()">&times;</span>
+                        <h3>Créer un nouveau produit</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Nom du produit *</label>
+                                <input type="text" id="newProductName" placeholder="Ex: Paracétamol 500mg" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Catégorie</label>
+                                <select id="newProductCategory">
+                                    <option value="Médicament">Médicament</option>
+                                    <option value="Parapharmacie">Parapharmacie</option>
+                                    <option value="Cosmétique">Cosmétique</option>
+                                    <option value="Matériel médical">Matériel médical</option>
+                                    <option value="Autre">Autre</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Prix d'achat *</label>
+                                <input type="number" id="newProductPrixAchat" min="0" step="0.01" placeholder="0.00" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Prix de vente *</label>
+                                <input type="number" id="newProductPrixVente" min="0" step="0.01" placeholder="0.00" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Quantité initiale</label>
+                                <input type="number" id="newProductQuantite" min="0" value="0" placeholder="0">
+                            </div>
+                            <div class="form-group">
+                                <label>Seuil d'alerte</label>
+                                <input type="number" id="newProductSeuil" min="0" value="5" placeholder="5">
+                            </div>
+                            <div class="form-group">
+                                <label>Fournisseur principal</label>
+                                <input type="text" id="newProductFournisseur" placeholder="Nom du fournisseur">
+                            </div>
+                            <div class="form-group">
+                                <label>Code barre</label>
+                                <input type="text" id="newProductCodeBarre" placeholder="Ex: 3400936760974">
+                            </div>
+                            <div class="form-group" style="grid-column: 1 / -1;">
+                                <label>Description</label>
+                                <textarea id="newProductDescription" rows="3" placeholder="Description du produit..."></textarea>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button class="btn btn-secondary" onclick="closeProductModal()">Annuler</button>
+                            <button class="btn btn-primary" onclick="saveNewProduct()">Créer le produit</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Ajouter le modal au body
+            const modalContainer = document.createElement('div');
+            modalContainer.innerHTML = modalHtml;
+            document.body.appendChild(modalContainer.firstElementChild);
+        }
+
+        // Fermer modal produit
+        function closeProductModal() {
+            const modal = document.getElementById('productModal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+
+        // Sauvegarder nouveau produit
+        function saveNewProduct() {
+            const name = document.getElementById('newProductName').value.trim();
+            const category = document.getElementById('newProductCategory').value;
+            const prixAchat = parseFloat(document.getElementById('newProductPrixAchat').value) || 0;
+            const prixVente = parseFloat(document.getElementById('newProductPrixVente').value) || 0;
+            const quantite = parseInt(document.getElementById('newProductQuantite').value) || 0;
+            const seuil = parseInt(document.getElementById('newProductSeuil').value) || 5;
+            const fournisseur = document.getElementById('newProductFournisseur').value.trim();
+            const codeBarre = document.getElementById('newProductCodeBarre').value.trim();
+            const description = document.getElementById('newProductDescription').value.trim();
+            
+            // Validation
+            if (!name) {
+                showAlert('Le nom du produit est obligatoire', 'error');
+                return;
+            }
+            
+            if (prixAchat <= 0 || prixVente <= 0) {
+                showAlert('Les prix doivent être supérieurs à 0', 'error');
+                return;
+            }
+            
+            if (prixVente < prixAchat) {
+                if (!confirm('Le prix de vente est inférieur au prix d\'achat. Continuer?')) {
+                    return;
+                }
+            }
+            
+            // Vérifier si le produit existe déjà
+            if (currentData.data.stock) {
+                const existingProduct = currentData.data.stock.find(p => 
+                    p.nom && p.nom.toLowerCase() === name.toLowerCase()
+                );
+                
+                if (existingProduct) {
+                    showAlert('Un produit avec ce nom existe déjà', 'error');
+                    return;
+                }
+            } else {
+                currentData.data.stock = [];
+            }
+            
+            // Créer le nouveau produit
+            const newProduct = {
+                id: generateId(),
+                nom: name,
+                categorie: category,
+                quantite: quantite,
+                prixAchat: prixAchat,
+                prixVente: prixVente,
+                seuil: seuil,
+                dernierFournisseur: fournisseur,
+                codeBarre: codeBarre,
+                description: description,
+                datePeremption: null,
+                creeLe: new Date().toISOString(),
+                creeParEmail: currentData.metadata?.exportedByEmail || 'offline@user.com',
+                societeId: currentData.metadata?.societeId || 'offline_societe'
+            };
+            
+            // Ajouter au stock
+            currentData.data.stock.push(newProduct);
+            
+            // Sauvegarder
+            saveData();
+            
+            // Fermer le modal
+            closeProductModal();
+            
+            // Rafraîchir l'affichage
+            refreshCurrentTab();
+            updateSummary();
+            
+            showAlert(`Produit "${name}" créé avec succès!`, 'success');
+        }
+
+        // Calculer le total
+        function calculateTotal() {
+            const totalInfo = document.getElementById('totalInfo');
+            if (!totalInfo) return;
+
+            let total = 0;
+            const articleForms = document.querySelectorAll('.article-form');
+            
+            articleForms.forEach(form => {
+                if (currentCollection === 'achats') {
+                    const quantite = parseFloat(form.querySelector('input[name="quantite"]')?.value) || 0;
+                    const prixAchat = parseFloat(form.querySelector('input[name="prixAchat"]')?.value) || 0;
+                    total += quantite * prixAchat;
+                } else if (currentCollection === 'ventes') {
+                    const quantite = parseFloat(form.querySelector('input[name="quantite"]')?.value) || 0;
+                    const prixUnitaire = parseFloat(form.querySelector('input[name="prixUnitaire"]')?.value) || 0;
+                    const remise = parseFloat(form.querySelector('input[name="remise"]')?.value) || 0;
+                    const sousTotal = quantite * prixUnitaire;
+                    const montantRemise = sousTotal * (remise / 100);
+                    total += sousTotal - montantRemise;
+                }
+            });
+
+            // Appliquer la remise globale pour les achats
+            if (currentCollection === 'achats') {
+                const remiseGlobale = parseFloat(document.getElementById('remiseGlobale')?.value) || 0;
+                const montantRemise = total * (remiseGlobale / 100);
+                total -= montantRemise;
+            }
+
+            totalInfo.textContent = `Total: ${total.toFixed(2)} DHS`;
+        }
+
+        // Ouvrir modal d'ajout
+        function openAddModal(collection) {
+            currentCollection = collection;
+            editingItem = null;
+            editingIndex = null;
+            
+            document.getElementById('editModalTitle').textContent = `Ajouter ${collection.slice(0, -1)}`;
+            document.getElementById('editForm').innerHTML = `
+                ${getFormTemplate(collection)}
+                <div class="form-actions">
+                    <button class="btn btn-secondary" onclick="closeEditModal()">Annuler</button>
+                    <button class="btn btn-primary" onclick="saveItem()">Ajouter</button>
+                </div>
+            `;
+            
+            document.getElementById('editModal').style.display = 'block';
+            
+            // Calculer le total initial si nécessaire
+            setTimeout(() => calculateTotal(), 100);
+        }
+
+        // Ouvrir modal de modification
+        function openEditModal(collection, index) {
+            currentCollection = collection;
+            editingIndex = index;
+            editingItem = currentData.data[collection][index];
+            
+            document.getElementById('editModalTitle').textContent = `Modifier ${collection.slice(0, -1)}`;
+            document.getElementById('editForm').innerHTML = `
+                ${getFormTemplate(collection, editingItem)}
+                <div class="form-actions">
+                    <button class="btn btn-secondary" onclick="closeEditModal()">Annuler</button>
+                    <button class="btn btn-primary" onclick="saveItem(${index})">Modifier</button>
+                </div>
+            `;
+            
+            document.getElementById('editModal').style.display = 'block';
+            
+            // Calculer le total initial si nécessaire
+            setTimeout(() => calculateTotal(), 100);
+        }
+
+        // Fermer modal d'édition
+        function closeEditModal() {
+            document.getElementById('editModal').style.display = 'none';
+            currentCollection = '';
+            editingItem = null;
+            editingIndex = null;
+        }
+
+        // Ajouter un article (pour achats)
+        function addArticle() {
+            const container = document.getElementById('articlesContainer');
+            const articleCount = container.children.length;
+            const newArticleHtml = createArticleForm(null, articleCount);
+            container.insertAdjacentHTML('beforeend', newArticleHtml);
+            calculateTotal();
+        }
+
+        // Ajouter un article de vente
+        function addVenteArticle() {
+            const container = document.getElementById('articlesContainer');
+            const articleCount = container.children.length;
+            const newArticleHtml = createVenteArticleForm(null, articleCount);
+            container.insertAdjacentHTML('beforeend', newArticleHtml);
+            calculateTotal();
+        }
+
+        // Supprimer un article
+        function removeArticle(button) {
+            const articleForm = button.closest('.article-form');
+            articleForm.remove();
+            
+            // Réindexer les articles restants
+            const remainingForms = document.querySelectorAll('.article-form');
+            remainingForms.forEach((form, index) => {
+                form.dataset.index = index;
+                const title = form.querySelector('h5');
+                if (title) {
+                    title.textContent = `Article ${index + 1}`;
+                }
+            });
+            
+            calculateTotal();
+        }
+
+        // Collecte des données du formulaire
+        function collectFormData(collection) {
+            const formData = {};
+            
+            // Collecte des champs principaux
+            const inputs = document.querySelectorAll('#editForm input:not([name]), #editForm select:not([name]), #editForm textarea:not([name])');
+            inputs.forEach(input => {
+                if (input.id) {
+                    let value = input.value;
+                    if (input.type === 'number') {
+                        // Convertir en entier pour les quantités, en décimal pour les prix
+                        if (input.id === 'quantite' || input.id === 'seuil') {
+                            value = parseInt(value) || 0;
+                        } else {
+                            value = parseFloat(value) || 0;
+                        }
+                    } else if (input.type === 'date' && value) {
+                        value = new Date(value).toISOString();
+                    }
+                    formData[input.id] = value;
+                }
+            });
+
+            // Collecte des articles si applicable
+            if (collection === 'achats' || collection === 'ventes') {
+                const articles = [];
+                const articleForms = document.querySelectorAll('.article-form');
+                
+                articleForms.forEach(form => {
+                    const article = {};
+                    const inputs = form.querySelectorAll('input[name], select[name]');
+                    inputs.forEach(input => {
+                        let value = input.value;
+                        if (input.type === 'number') {
+                            // Convertir en entier pour les quantités, en décimal pour les prix
+                            if (input.name === 'quantite') {
+                                value = parseInt(value) || 0;
+                            } else {
+                                value = parseFloat(value) || 0;
+                            }
+                        } else if (input.type === 'date' && value) {
+                            value = new Date(value).toISOString();
+                        }
+                        article[input.name] = value;
+                    });
+                    
+                    // Vérifier que l'article a au moins un produit défini
+                    if (article.produit && article.produit.trim() !== '') {
+                        // S'assurer que les quantités sont des entiers
+                        if (article.quantite) {
+                            article.quantite = parseInt(article.quantite) || 0;
+                        }
+                        articles.push(article);
+                    }
+                });
+                
+                formData.articles = articles;
+                
+                // Calculer les totaux
+                if (collection === 'achats') {
+                    let totalHT = 0;
+                    articles.forEach(article => {
+                        const quantite = parseInt(article.quantite) || 0;
+                        const prixAchat = parseFloat(article.prixAchat) || 0;
+                        totalHT += quantite * prixAchat;
+                    });
+                    const remiseGlobale = parseFloat(formData.remiseGlobale) || 0;
+                    const montantRemise = totalHT * (remiseGlobale / 100);
+                    formData.totalHT = totalHT;
+                    formData.montantRemise = montantRemise;
+                    formData.totalTTC = totalHT - montantRemise;
+                } else if (collection === 'ventes') {
+                    let totalHT = 0;
+                    let totalRemise = 0;
+                    articles.forEach(article => {
+                        const quantite = parseInt(article.quantite) || 0;
+                        const prixUnitaire = parseFloat(article.prixUnitaire) || 0;
+                        const remise = parseFloat(article.remise) || 0;
+                        const sousTotal = quantite * prixUnitaire;
+                        const montantRemise = sousTotal * (remise / 100);
+                        totalHT += sousTotal;
+                        totalRemise += montantRemise;
+                    });
+                    formData.totalHT = totalHT;
+                    formData.totalRemise = totalRemise;
+                    formData.totalTTC = totalHT - totalRemise;
+                }
+            }
+
+            // Pour le stock, s'assurer que les quantités sont des entiers
+            if (collection === 'stock') {
+                if (formData.quantite !== undefined) {
+                    formData.quantite = parseInt(formData.quantite) || 0;
+                }
+                if (formData.seuil !== undefined) {
+                    formData.seuil = parseInt(formData.seuil) || 5;
+                }
+            }
+
+            return formData;
+        }
+
+        // Sauvegarder un élément
+        function saveItem(index = null) {
+            try {
+                const formData = collectFormData(currentCollection);
+                
+                // Validation basique
+                if (!formData || Object.keys(formData).length === 0) {
+                    showAlert('Veuillez remplir les champs requis', 'error');
+                    return;
+                }
+
+                // Validation spécifique pour achats/ventes
+                if ((currentCollection === 'achats' || currentCollection === 'ventes') && 
+                    (!formData.articles || formData.articles.length === 0)) {
+                    showAlert('Veuillez ajouter au moins un article', 'error');
+                    return;
+                }
+
+                // Initialiser la collection si elle n'existe pas
+                if (!currentData.data[currentCollection]) {
+                    currentData.data[currentCollection] = [];
+                }
+
+                // Ajout des métadonnées
+                const now = new Date().toISOString();
+                const userEmail = currentData.metadata?.exportedByEmail || 'offline@user.com';
+                
+                // Récupérer les anciennes données avant modification (pour le stock)
+                let previousData = null;
+                if (index !== null) {
+                    previousData = JSON.parse(JSON.stringify(currentData.data[currentCollection][index]));
+                }
+                
+                if (index === null) {
+                    // Nouveau élément
+                    formData.id = generateId();
+                    formData.creeLe = now;
+                    formData.creeParEmail = userEmail;
+                    formData.societeId = currentData.metadata?.societeId || 'offline_societe';
+                    formData.timestamp = now;
+                    
+                    // Mise à jour du stock AVANT d'ajouter l'élément
+                    updateStockAfterOperation(currentCollection, formData, 'add');
+                    
+                    currentData.data[currentCollection].push(formData);
+                    showAlert('Élément ajouté avec succès!', 'success');
+                } else {
+                    // Modification
+                    const existingItem = currentData.data[currentCollection][index];
+                    
+                    // Conserver les métadonnées originales
+                    const preservedFields = ['id', 'creeLe', 'creeParEmail', 'societeId'];
+                    preservedFields.forEach(field => {
+                        if (existingItem[field]) {
+                            formData[field] = existingItem[field];
+                        }
+                    });
+                    
+                    formData.modifieLe = now;
+                    formData.modifieParEmail = userEmail;
+                    
+                    // Mise à jour du stock AVANT de modifier l'élément
+                    updateStockAfterOperation(currentCollection, formData, 'update', previousData);
+                    
+                    currentData.data[currentCollection][index] = formData;
+                    showAlert('Élément modifié avec succès!', 'success');
+                }
+
+                // Sauvegarde finale
+                saveData();
+                
+                // Fermeture du modal et rafraîchissement
+                closeEditModal();
+                
+                // Rafraîchir tous les onglets pour voir les changements de stock
+                refreshAllTabs();
+                updateSummary();
+                
+            } catch (error) {
+                console.error('Erreur lors de la sauvegarde:', error);
+                showAlert('Erreur lors de la sauvegarde: ' + error.message, 'error');
+            }
+        }
+
+        // Rafraîchir tous les onglets
+        function refreshAllTabs() {
+            const collections = Object.keys(currentData.data).filter(key => 
+                currentData.data[key] && Array.isArray(currentData.data[key])
+            );
+            
+            collections.forEach(collection => {
+                const tabContent = document.getElementById(`tab-${collection}`);
+                if (tabContent) {
+                    tabContent.innerHTML = createTableForCollection(collection);
+                }
+            });
+        }
+
+        // Mise à jour du stock après opération
+        function updateStockAfterOperation(collection, data, operation, previousData = null) {
+            if (!currentData.data.stock) {
+                currentData.data.stock = [];
+            }
+
+            console.log('Mise à jour stock - Collection:', collection, 'Operation:', operation);
+
+            if (collection === 'achats' && data.articles) {
+                // Si c'est une modification, annuler l'ancien achat d'abord
+                if (operation === 'update' && previousData && previousData.articles) {
+                    console.log('Annulation ancien achat pour modification');
+                    previousData.articles.forEach(article => {
+                        let stockItem = currentData.data.stock.find(s => 
+                            s.nom === article.produit || 
+                            (s.numeroLot && s.numeroLot === article.numeroLot)
+                        );
+                        
+                        if (stockItem) {
+                            // Retirer l'ancienne quantité
+                            stockItem.quantite = Math.max(0, (parseInt(stockItem.quantite) || 0) - (parseInt(article.quantite) || 0));
+                            console.log(`Stock ${stockItem.nom}: retiré ${article.quantite}, nouveau stock: ${stockItem.quantite}`);
+                        }
+                    });
+                }
+
+                // Ajouter au stock lors d'un achat
+                data.articles.forEach(article => {
+                    let stockItem = currentData.data.stock.find(s => 
+                        s.nom && article.produit && 
+                        s.nom.toLowerCase() === article.produit.toLowerCase()
+                    );
+                    
+                    const quantiteToAdd = parseInt(article.quantite) || 0;
+                    
+                    if (stockItem) {
+                        const oldQuantity = parseInt(stockItem.quantite) || 0;
+                        stockItem.quantite = oldQuantity + quantiteToAdd;
+                        stockItem.dernierFournisseur = data.fournisseur;
+                        stockItem.prixAchat = parseFloat(article.prixAchat) || 0;
+                        stockItem.prixVente = parseFloat(article.prixVente) || 0;
+                        if (article.datePeremption) {
+                            stockItem.datePeremption = article.datePeremption;
+                        }
+                        stockItem.modifieLe = new Date().toISOString();
+                        
+                        console.log(`Stock ${stockItem.nom}: ajouté ${quantiteToAdd}, nouveau stock: ${stockItem.quantite}`);
+                        showAlert(`Stock mis à jour: ${stockItem.nom} (${stockItem.quantite} unités)`, 'info');
+                    } else {
+                        // Créer nouveau produit dans le stock
+                        const newStockItem = {
+                            id: generateId(),
+                            nom: article.produit,
+                            numeroLot: article.numeroLot,
+                            quantite: quantiteToAdd,
+                            prixAchat: parseFloat(article.prixAchat) || 0,
+                            prixVente: parseFloat(article.prixVente) || 0,
+                            datePeremption: article.datePeremption,
+                            dernierFournisseur: data.fournisseur,
+                            seuil: 5,
+                            creeLe: new Date().toISOString(),
+                            creeParEmail: currentData.metadata?.exportedByEmail || 'offline@user.com',
+                            societeId: currentData.metadata?.societeId || 'offline_societe'
+                        };
+                        currentData.data.stock.push(newStockItem);
+                        console.log(`Nouveau produit créé: ${article.produit} avec ${quantiteToAdd} unités`);
+                        showAlert(`Nouveau produit ajouté au stock: ${article.produit} (${quantiteToAdd} unités)`, 'success');
+                    }
+                });
+                
+            } else if (collection === 'ventes' && data.articles) {
+                // Si c'est une modification, annuler l'ancienne vente d'abord
+                if (operation === 'update' && previousData && previousData.articles) {
+                    console.log('Annulation ancienne vente pour modification');
+                    previousData.articles.forEach(article => {
+                        let stockItem = currentData.data.stock.find(s => 
+                            s.nom === article.produit || 
+                            (s.numeroLot && s.numeroLot === article.numeroLot)
+                        );
+                        
+                        if (stockItem) {
+                            // Remettre l'ancienne quantité
+                            stockItem.quantite = (parseInt(stockItem.quantite) || 0) + (parseInt(article.quantite) || 0);
+                            console.log(`Stock ${stockItem.nom}: remis ${article.quantite}, nouveau stock: ${stockItem.quantite}`);
+                        }
+                    });
+                }
+
+                // Diminuer le stock lors d'une vente
+                data.articles.forEach(article => {
+                    let stockItem = currentData.data.stock.find(s => 
+                        s.nom && article.produit && 
+                        s.nom.toLowerCase() === article.produit.toLowerCase()
+                    );
+                    
+                    const quantiteToRemove = parseInt(article.quantite) || 0;
+                    
+                    if (stockItem) {
+                        const oldQuantity = parseInt(stockItem.quantite) || 0;
+                        
+                        if (oldQuantity < quantiteToRemove) {
+                            showAlert(`Stock insuffisant pour ${stockItem.nom}: ${oldQuantity} disponibles, ${quantiteToRemove} demandés`, 'error');
+                            // Vendre seulement ce qui est disponible
+                            stockItem.quantite = 0;
+                        } else {
+                            stockItem.quantite = oldQuantity - quantiteToRemove;
+                        }
+                        
+                        stockItem.modifieLe = new Date().toISOString();
+                        
+                        console.log(`Stock ${stockItem.nom}: vendu ${quantiteToRemove}, nouveau stock: ${stockItem.quantite}`);
+                        
+                        // Alerte si stock en dessous du seuil
+                        if (stockItem.quantite <= (parseInt(stockItem.seuil) || 5)) {
+                            showAlert(`⚠️ Stock faible pour ${stockItem.nom}: ${stockItem.quantite} restants (seuil: ${stockItem.seuil || 5})`, 'warning');
+                        } else {
+                            showAlert(`Stock mis à jour: ${stockItem.nom} (${stockItem.quantite} restants)`, 'info');
+                        }
+                    } else {
+                        showAlert(`⚠️ Produit non trouvé en stock: ${article.produit}. Créez d'abord le produit.`, 'error');
+                    }
+                });
+            }
+            
+            // Forcer la sauvegarde immédiate
+            saveData();
+        }
+
+        // Confirmation de suppression
+        function confirmDelete(collection, index) {
+            const item = currentData.data[collection][index];
+            const itemName = item.nom || item.client || item.fournisseur || item.produit || `Élément ${index + 1}`;
+            
+            document.getElementById('confirmMessage').textContent = 
+                `Êtes-vous sûr de vouloir supprimer "${itemName}" ?`;
+            
+            document.getElementById('confirmButton').onclick = () => {
+                deleteItem(collection, index);
+                closeConfirmModal();
+            };
+            
+            document.getElementById('confirmModal').style.display = 'block';
+        }
+
+        // Supprimer un élément
+        function deleteItem(collection, index) {
+            try {
+                const item = currentData.data[collection][index];
+                
+                // Si c'est un achat ou une vente, restaurer le stock
+                if ((collection === 'achats' || collection === 'ventes') && item.articles) {
+                    console.log('Restauration du stock avant suppression');
+                    
+                    if (collection === 'achats') {
+                        // Retirer du stock ce qui avait été ajouté
+                        item.articles.forEach(article => {
+                            let stockItem = currentData.data.stock?.find(s => 
+                                s.nom && article.produit && 
+                                s.nom.toLowerCase() === article.produit.toLowerCase()
+                            );
+                            
+                            if (stockItem) {
+                                const quantiteToRemove = parseInt(article.quantite) || 0;
+                                stockItem.quantite = Math.max(0, (parseInt(stockItem.quantite) || 0) - quantiteToRemove);
+                                console.log(`Stock ${stockItem.nom}: retiré ${quantiteToRemove} (suppression achat), nouveau stock: ${stockItem.quantite}`);
+                                showAlert(`Stock mis à jour: ${stockItem.nom} (${stockItem.quantite} restants)`, 'info');
+                            }
+                        });
+                    } else if (collection === 'ventes') {
+                        // Remettre en stock ce qui avait été vendu
+                        item.articles.forEach(article => {
+                            let stockItem = currentData.data.stock?.find(s => 
+                                s.nom && article.produit && 
+                                s.nom.toLowerCase() === article.produit.toLowerCase()
+                            );
+                            
+                            if (stockItem) {
+                                const quantiteToAdd = parseInt(article.quantite) || 0;
+                                stockItem.quantite = (parseInt(stockItem.quantite) || 0) + quantiteToAdd;
+                                console.log(`Stock ${stockItem.nom}: remis ${quantiteToAdd} (suppression vente), nouveau stock: ${stockItem.quantite}`);
+                                showAlert(`Stock mis à jour: ${stockItem.nom} (${stockItem.quantite} unités)`, 'info');
+                            }
+                        });
+                    }
+                }
+                
+                // Supprimer l'élément
+                currentData.data[collection].splice(index, 1);
+                
+                // Sauvegarder
+                saveData();
+                
+                // Rafraîchir tous les onglets
+                refreshAllTabs();
+                updateSummary();
+                
+                showAlert('Élément supprimé avec succès!', 'success');
+            } catch (error) {
+                showAlert('Erreur lors de la suppression: ' + error.message, 'error');
+            }
+        }
+
+        // Fermer modal de confirmation
+        function closeConfirmModal() {
+            document.getElementById('confirmModal').style.display = 'none';
+        }
+
+        // Rafraîchir l'onglet actuel
+        function refreshCurrentTab() {
+            if (currentCollection) {
+                const activeContent = document.getElementById(`tab-${currentCollection}`);
+                if (activeContent) {
+                    activeContent.innerHTML = createTableForCollection(currentCollection);
+                }
+            }
+        }
+
+        // Mise à jour du résumé
+        function updateSummary() {
+            // Recalculer les statistiques
+            if (currentData && currentData.statistics) {
+                if (!currentData.statistics.collectionsDetails) {
+                    currentData.statistics.collectionsDetails = {};
+                }
+                
+                Object.keys(currentData.data).forEach(collection => {
+                    if (!currentData.statistics.collectionsDetails[collection]) {
+                        currentData.statistics.collectionsDetails[collection] = {};
+                    }
+                    if (Array.isArray(currentData.data[collection])) {
+                        currentData.statistics.collectionsDetails[collection].count = currentData.data[collection].length;
+                    }
+                });
+                
+                currentData.statistics.totalDocuments = Object.values(currentData.data)
+                    .reduce((total, arr) => total + (Array.isArray(arr) ? arr.length : 0), 0);
+            }
+            
+            createSummaryCards();
+        }
+
+        // Exportation des données
+        function exportData() {
+            if (!currentData) {
+                showAlert('Aucune donnée à exporter', 'error');
+                return;
+            }
+
+            showProgress('Préparation de l\'export...', 20);
+
+            // Mettre à jour les métadonnées d'export
+            const exportData = JSON.parse(JSON.stringify(currentData));
+            
+            if (!exportData.metadata) {
+                exportData.metadata = {};
+            }
+            
+            exportData.metadata.exportDateIso = new Date().toISOString();
+            exportData.metadata.exportDateMs = Date.now();
+            exportData.metadata.exportedFrom = 'offline-app';
+            
+            // Recalculer les statistiques
+            if (!exportData.statistics) {
+                exportData.statistics = {};
+            }
+            
+            let totalDocuments = 0;
+            const collectionsDetails = {};
+            
+            Object.entries(exportData.data).forEach(([key, value]) => {
+                if (Array.isArray(value)) {
+                    totalDocuments += value.length;
+                    collectionsDetails[key] = {
+                        count: value.length,
+                        label: key.charAt(0).toUpperCase() + key.slice(1),
+                        exported: true
+                    };
+                }
+            });
+            
+            exportData.statistics.totalDocuments = totalDocuments;
+            exportData.statistics.totalCollections = Object.keys(collectionsDetails).length;
+            exportData.statistics.collectionsDetails = collectionsDetails;
+            
+            showProgress('Génération du fichier...', 60);
+
+            // Créer le blob et télécharger
+            const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `pharma-export-${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            showProgress('Export terminé!', 100);
+
+            // Sauvegarder la date d'export
+            localStorage.setItem('lastExport', new Date().toISOString());
+
+            setTimeout(() => {
+                hideProgress();
+                showAlert('Données exportées avec succès!', 'success');
+            }, 500);
+        }
+
+        // Effacer les données
+        function clearData() {
+            if (confirm('Êtes-vous sûr de vouloir effacer toutes les données locales ?')) {
+                localStorage.removeItem('pharmaData');
+                localStorage.removeItem('pharmaDataOriginal');
+                localStorage.removeItem('lastImport');
+                localStorage.removeItem('lastExport');
+                localStorage.removeItem('lastModified');
+                
+                currentData = null;
+                originalData = null;
+                
+                document.getElementById('dataSummary').style.display = 'none';
+                document.getElementById('dataTabs').style.display = 'none';
+                document.getElementById('exportBtn').disabled = true;
+                document.getElementById('dataStatus').textContent = 'Aucune donnée chargée';
+                document.getElementById('lastSync').textContent = 'Aucune synchronisation';
+                
+                showAlert('Données effacées', 'info');
+            }
+        }
+
+        // Chargement des données au démarrage
+        function loadStoredData() {
+            const storedData = localStorage.getItem('pharmaData');
+            if (storedData) {
+                try {
+                    currentData = JSON.parse(storedData);
+                    originalData = JSON.parse(localStorage.getItem('pharmaDataOriginal') || storedData);
+                    updateUI();
+                    showAlert('Données précédentes rechargées', 'info');
+                } catch (error) {
+                    showAlert('Erreur lors du chargement des données stockées', 'error');
+                }
+            }
+        }
+
+        // Initialisation
+        window.addEventListener('load', () => {
+            updateConnectionStatus();
+            loadStoredData();
+        });
+
+        window.addEventListener('online', updateConnectionStatus);
+        window.addEventListener('offline', updateConnectionStatus);
+
+        // Fermeture des modales en cliquant à l'extérieur
+        window.addEventListener('click', (event) => {
+            const modals = document.querySelectorAll('.modal');
+            modals.forEach(modal => {
+                if (event.target === modal && modal.id !== 'progressModal') {
+                    modal.style.display = 'none';
+                }
+            });
+        });
     </script>
 </body>
 </html>
