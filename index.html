@@ -229,9 +229,7 @@
                     <h1 id="pageTitle">Tableau de bord</h1>
                     <div class="header-subtitle" id="pageSubtitle">Vue d'ensemble de votre pharmacie</div>
                 </div>
-                <div class="header-actions" id="headerActions">
-                    <!-- Actions dynamiques selon la section -->
-                </div>
+                <div class="header-actions" id="headerActions"></div>
             </div>
 
             <div class="content-area" id="contentArea">
@@ -330,12 +328,9 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function setupEventListeners() {
-    // Import file
     document.getElementById('importFile').addEventListener('change', handleFileImport);
-    // Connection status
     window.addEventListener('online', updateConnectionStatus);
     window.addEventListener('offline', updateConnectionStatus);
-    // Click outside modals
     window.addEventListener('click', function(event) {
         if (event.target.classList.contains('modal')) {
             if (event.target.id !== 'progressModal') {
@@ -343,13 +338,12 @@ function setupEventListeners() {
             }
         }
     });
-    // Drag & drop JSON
     const dropZone = document.body;
     dropZone.addEventListener('dragover', function(e) { e.preventDefault(); e.stopPropagation(); });
     dropZone.addEventListener('drop', function(e) {
         e.preventDefault(); e.stopPropagation();
         const files = e.dataTransfer.files;
-        if (files.length > 0 && files[0].type === 'application/json') {
+        if (files.length > 0 && (files[0].type === 'application/json' || files[0].name.endsWith('.json'))) {
             handleFileImport({ target: { files: files } });
         }
     });
@@ -420,8 +414,106 @@ function loadStoredData() {
             showAlert('Erreur de chargement des données locales', 'error');
         }
     } else {
-        updateNavBadges(); // s'assure que les badges sont à 0 au démarrage sans données
+        updateNavBadges();
     }
+}
+
+/* ===================== Parsing & Montants robustes ===================== */
+/** Parse toutes les notations (1 234,56 / 1,234.56 / "1 234,56") en Number */
+function parseNumeric(val){
+    if (typeof val === 'number') return val;
+    if (typeof val !== 'string') return NaN;
+    let s = val.trim().replace(/\s+/g,'').replace(/'/g,''); // supprime espaces et '
+    // garder seulement chiffres, ., , et -
+    s = s.replace(/[^0-9.,-]/g,'');
+    const lastComma = s.lastIndexOf(',');
+    const lastDot = s.lastIndexOf('.');
+    let decSep = null;
+    if (lastComma > lastDot) decSep = ',';
+    else if (lastDot > lastComma) decSep = '.';
+    if (decSep){
+        const parts = s.split(decSep);
+        const intPart = parts.slice(0,-1).join(decSep).replace(/[.,]/g,''); // suppr. séparateurs milliers
+        const fracPart = parts[parts.length-1];
+        s = intPart + '.' + fracPart;
+    } else {
+        // pas de décimales -> suppr. séparateurs
+        s = s.replace(/[.,]/g,'');
+    }
+    const n = parseFloat(s);
+    return Number.isNaN(n) ? NaN : n;
+}
+
+/** Cherche un montant par clés connues (y compris imbriquées à faible profondeur) */
+function trouverMontantBrut(obj, cles = ['totalTTC','ttc','montant','total','netAPayer','amount','paid','due']){
+    if (!obj || typeof obj !== 'object') return NaN;
+
+    // 1) direct
+    for (const cle of cles) {
+        if (obj[cle] !== undefined && obj[cle] !== null){
+            const n = parseNumeric(obj[cle]);
+            if (!Number.isNaN(n)) return n;
+        }
+    }
+
+    // 2) conventions courantes: totals/amount/payment nested
+    const nests = ['totals','total','amount','payment','paiement','resume','summary'];
+    for (const key of nests){
+        if (obj[key] && typeof obj[key] === 'object'){
+            const n = trouverMontantBrut(obj[key], cles);
+            if (!Number.isNaN(n)) return n;
+        }
+    }
+
+    // 3) scan peu profond
+    for (const k in obj){
+        const v = obj[k];
+        if (v && typeof v === 'object'){
+            // éviter boucle articles ici, calculé séparément
+            if (k.toLowerCase() === 'articles') continue;
+            const n = trouverMontantBrut(v, cles);
+            if (!Number.isNaN(n)) return n;
+        }
+    }
+    return NaN;
+}
+
+/** Calcule montant à partir des articles (fallback) */
+function calculerDepuisArticles(item, type){
+    if (!item || !Array.isArray(item.articles)) return NaN;
+    let total = 0;
+    if (type === 'achat'){
+        item.articles.forEach(a => {
+            const q = parseNumeric(a.quantite) || 0;
+            const p = parseNumeric(a.prixAchat) || 0;
+            total += q * p;
+        });
+        const remise = parseNumeric(item.remiseGlobale) || 0;
+        total = total - total * (remise/100);
+    } else if (type === 'vente'){
+        item.articles.forEach(a => {
+            const q = parseNumeric(a.quantite) || 0;
+            const p = parseNumeric(a.prixUnitaire) || 0;
+            const st = q * p;
+            const r = parseNumeric(a.remise) || 0;
+            total += st - (st * r / 100);
+        });
+    }
+    return total;
+}
+
+/** Montant d'un achat (TTC/Net), robuste */
+function montantAchat(item){
+    let n = trouverMontantBrut(item, ['totalTTC','ttc','montant','total','netAPayer','amount']);
+    if (Number.isNaN(n)) n = calculerDepuisArticles(item, 'achat');
+    return Number.isNaN(n) ? 0 : n;
+}
+
+/** Montant d'une vente, robuste */
+function montantVente(item){
+    let n = trouverMontantBrut(item, ['totalTTC','ttc','netAPayer','montant','total','amount']);
+    if (Number.isNaN(n)) n = calculerDepuisArticles(item, 'vente');
+    return Number.isNaN(n) ? 0 : n;
 }
 
 /* ===================== Interface ===================== */
@@ -471,17 +563,20 @@ function calculateMetrics() {
         totalStock = data.stock.length;
         stockFaible = data.stock.filter(item => (parseInt(item.quantite)||0) <= (parseInt(item.seuil)||5)).length;
     }
+
     const today = new Date().toISOString().split('T')[0];
     if (data.ventes) {
-        const ventesTodayList = data.ventes.filter(v => v.date && v.date.startsWith(today));
+        const ventesTodayList = data.ventes.filter(v => (v.date && v.date.startsWith(today)) || (v.createdAt && v.createdAt.startsWith(today)));
         ventesToday = ventesTodayList.length;
-        ventesAmount = ventesTodayList.reduce((s,v)=> s + (parseFloat(v.totalTTC)||0),0);
+        ventesAmount = ventesTodayList.reduce((s,v)=> s + montantVente(v), 0);
     }
+
     const thisMonth = new Date().toISOString().substring(0,7);
     if (data.achats) {
-        const achatsThisMonth = data.achats.filter(a => a.date && a.date.startsWith(thisMonth));
-        achatsAmount = achatsThisMonth.reduce((s,a)=> s + (parseFloat(a.totalTTC)||0),0);
+        const achatsThisMonth = data.achats.filter(a => (a.date && a.date.startsWith(thisMonth)) || (a.createdAt && a.createdAt.startsWith(thisMonth)));
+        achatsAmount = achatsThisMonth.reduce((s,a)=> s + montantAchat(a), 0);
     }
+
     return {
         totalStock, stockFaible, ventesToday, ventesAmount, achatsAmount,
         totalDocuments: Object.values(data).reduce((sum, arr) => sum + (Array.isArray(arr)?arr.length:0), 0)
@@ -520,7 +615,7 @@ function updateDashboardMetrics(m) {
                 <div class="metric-title">Achats ce Mois</div>
                 <div class="metric-icon" style="background:#fef3c7;color:#92400e;">🛒</div>
             </div>
-            <div class="metric-value">${m.achatsAmount.toFixed(0)}</div>
+            <div class="metric-value">${m.achatsAmount.toFixed(2)}</div>
             <div class="metric-subtitle">DHS dépensés</div>
         </div>
     `;
@@ -543,25 +638,17 @@ function updateStockAlerts() {
 }
 
 /* ===================== Navigation ===================== */
-/* SAFE: accepte un appel programmatique sans event */
 function showSection(sectionName, evt) {
     currentSection = sectionName;
-
-    // Met à jour l'état "active" dans la nav
     document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
     if (evt && (evt.currentTarget || evt.target)) {
         (evt.currentTarget || evt.target).classList.add('active');
     } else {
-        // Si appelée par code (sans event), on essaie de trouver le bouton correspondant
         const guessBtn = Array.from(document.querySelectorAll('.nav-item'))
             .find(b => (b.getAttribute('onclick') || '').includes(`'${sectionName}'`));
         if (guessBtn) guessBtn.classList.add('active');
     }
-
-    // Cache toutes les sections
     document.querySelectorAll('.section').forEach(section => { section.style.display = 'none'; });
-
-    // Affiche la section demandée + met à jour contenu et header
     const targetSection = document.getElementById(`section-${sectionName}`);
     if (targetSection) {
         targetSection.style.display = 'block';
@@ -672,14 +759,14 @@ function getTableColumns(section) {
         ventes: [
             { key:'date', label:'Date' },
             { key:'client', label:'Client' },
-            { key:'totalTTC', label:'Montant' },
+            { key:'_montant_vente', label:'Montant' },
             { key:'modePaiement', label:'Paiement' },
             { key:'statutPaiement', label:'Statut' }
         ],
         achats: [
             { key:'date', label:'Date' },
             { key:'fournisseur', label:'Fournisseur' },
-            { key:'totalTTC', label:'Montant' },
+            { key:'_montant_achat', label:'Montant' },
             { key:'statutPaiement', label:'Statut' },
             { key:'articles', label:'Articles' }
         ],
@@ -696,7 +783,15 @@ function getTableColumns(section) {
 
 function createTableRow(item, index, columns, section) {
     let html = '<tr>';
-    columns.forEach(col => { html += `<td>${formatCellValue(item[col.key], col.key, item)}</td>`; });
+    columns.forEach(col => {
+        if (col.key === '_montant_achat') {
+            html += `<td>${montantAchat(item).toFixed(2)} DHS</td>`;
+        } else if (col.key === '_montant_vente') {
+            html += `<td>${montantVente(item).toFixed(2)} DHS</td>`;
+        } else {
+            html += `<td>${formatCellValue(item[col.key], col.key, item)}</td>`;
+        }
+    });
     html += `
         <td>
             <div style="display:flex;gap:4px;">
@@ -710,17 +805,30 @@ function createTableRow(item, index, columns, section) {
 }
 
 function formatCellValue(value, key, item) {
-    if (value === null || value === undefined) return '-';
+    if (key === '_montant_achat') return `${montantAchat(item).toFixed(2)} DHS`;
+    if (key === '_montant_vente') return `${montantVente(item).toFixed(2)} DHS`;
+
+    if (value === null || value === undefined) {
+        if (['totalTTC','montant','total','ttc','netAPayer'].includes(key)) {
+            const amt = trouverMontantBrut(item);
+            if (!Number.isNaN(amt)) return `${amt.toFixed(2)} DHS`;
+        }
+        return '-';
+    }
     switch (key) {
         case 'date':
         case 'datePeremption':
+        case 'createdAt':
             try { return new Date(value).toLocaleDateString('fr-FR'); } catch(e){ return String(value); }
         case 'totalTTC':
         case 'totalHT':
         case 'montant':
         case 'prixVente':
         case 'prixAchat':
-            return `${(parseFloat(value)||0).toFixed(2)} DHS`;
+        case 'ttc': {
+            const n = parseNumeric(value) || 0;
+            return `${n.toFixed(2)} DHS`;
+        }
         case 'quantite':
         case 'stock':
         case 'seuil': {
@@ -737,11 +845,11 @@ function formatCellValue(value, key, item) {
             if (Array.isArray(value)) {
                 const count = value.length;
                 const preview = value.slice(0,2).map(a => a.produit || 'N/A').join(', ');
-                return count>2 ? `${preview}... (+${count-2})` : preview;
+                return count>2 ? `${preview}... (+${count-2})` : (preview || '-');
             }
             return '-';
         default:
-            return String(value).substring(0, 30);
+            return String(value).substring(0, 60);
     }
 }
 
@@ -749,7 +857,17 @@ function searchInItem(item, query) {
     const q = query.toLowerCase();
     return Object.values(item).some(value => {
         if (typeof value === 'string') return value.toLowerCase().includes(q);
-        if (Array.isArray(value)) return value.some(v => typeof v === 'object' && v.produit && v.produit.toLowerCase().includes(q));
+        if (typeof value === 'number') return String(value).includes(q);
+        if (Array.isArray(value)) return value.some(v => {
+            if (typeof v === 'string') return v.toLowerCase().includes(q);
+            if (v && typeof v === 'object') {
+                return Object.values(v).some(x => typeof x === 'string' && x.toLowerCase().includes(q));
+            }
+            return false;
+        });
+        if (value && typeof value === 'object') {
+            return Object.values(value).some(x => typeof x === 'string' && x.toLowerCase().includes(q));
+        }
         return false;
     });
 }
@@ -1035,8 +1153,8 @@ function getAvailableProducts() {
         .map(item => ({
             nom: item.nom,
             quantite: parseInt(item.quantite)||0,
-            prixAchat: parseFloat(item.prixAchat)||0,
-            prixVente: parseFloat(item.prixVente)||0
+            prixAchat: parseNumeric(item.prixAchat)||0,
+            prixVente: parseNumeric(item.prixVente)||0
         }));
 }
 function addVenteArticle(){ const c=document.getElementById('articlesContainer'); const count=c.children.length; c.insertAdjacentHTML('beforeend', createVenteArticleHTML(null,count)); calculateTotal(); }
@@ -1059,19 +1177,19 @@ function calculateTotal() {
     let total = 0;
     const articles = document.querySelectorAll('.article-item');
     articles.forEach(article => {
-        const quantite = parseFloat(article.querySelector('input[name="quantite"]')?.value) || 0;
+        const quantite = parseNumeric(article.querySelector('input[name="quantite"]')?.value) || 0;
         if (currentSection === 'ventes') {
-            const prix = parseFloat(article.querySelector('input[name="prixUnitaire"]')?.value) || 0;
-            const remise = parseFloat(article.querySelector('input[name="remise"]')?.value) || 0;
+            const prix = parseNumeric(article.querySelector('input[name="prixUnitaire"]')?.value) || 0;
+            const remise = parseNumeric(article.querySelector('input[name="remise"]')?.value) || 0;
             const sousTotal = quantite * prix;
             total += sousTotal - (sousTotal * remise / 100);
         } else if (currentSection === 'achats') {
-            const prix = parseFloat(article.querySelector('input[name="prixAchat"]')?.value) || 0;
+            const prix = parseNumeric(article.querySelector('input[name="prixAchat"]')?.value) || 0;
             total += quantite * prix;
         }
     });
     if (currentSection === 'achats') {
-        const remiseGlobale = parseFloat(document.getElementById('remiseGlobale')?.value) || 0;
+        const remiseGlobale = parseNumeric(document.getElementById('remiseGlobale')?.value) || 0;
         total -= total * (remiseGlobale / 100);
     }
     totalElement.textContent = `${total.toFixed(2)} DHS`;
@@ -1130,7 +1248,7 @@ function saveCurrentItem(section) {
             showAlert('Élément modifié avec succès!', 'success');
         }
 
-        updateStockForOperation(section, formData); // met à jour stock si achats/ventes
+        updateStockForOperation(section, formData);
         saveData();
         closeEditModal();
         updateInterface();
@@ -1146,7 +1264,7 @@ function collectFormData(section) {
         if (input.id) {
             let value = input.value;
             if (input.type === 'number') {
-                value = (input.id === 'quantite' || input.id === 'seuil') ? (parseInt(value)||0) : (parseFloat(value)||0);
+                value = (input.id === 'quantite' || input.id === 'seuil') ? (parseInt(value)||0) : (parseNumeric(value)||0);
             } else if (input.type === 'date' && value) {
                 value = new Date(value).toISOString();
             }
@@ -1162,7 +1280,7 @@ function collectFormData(section) {
             const inputs = item.querySelectorAll('input[name]');
             inputs.forEach(input => {
                 let value = input.value;
-                if (input.type === 'number') value = (input.name === 'quantite') ? (parseInt(value)||0) : (parseFloat(value)||0);
+                if (input.type === 'number') value = (input.name === 'quantite') ? (parseInt(value)||0) : (parseNumeric(value)||0);
                 else if (input.type === 'date' && value) value = new Date(value).toISOString();
                 article[input.name] = value;
             });
@@ -1171,23 +1289,9 @@ function collectFormData(section) {
         formData.articles = articles;
 
         if (section === 'ventes') {
-            let totalHT = 0, totalRemise = 0;
-            articles.forEach(a => {
-                const sousTotal = (parseInt(a.quantite)||0) * (parseFloat(a.prixUnitaire)||0);
-                const remise = sousTotal * ((parseFloat(a.remise)||0) / 100);
-                totalHT += sousTotal; totalRemise += remise;
-            });
-            formData.totalHT = totalHT;
-            formData.totalRemise = totalRemise;
-            formData.totalTTC = totalHT - totalRemise;
+            formData.totalTTC = montantVente(formData);
         } else if (section === 'achats') {
-            let totalHT = 0;
-            articles.forEach(a => { totalHT += (parseInt(a.quantite)||0) * (parseFloat(a.prixAchat)||0); });
-            const remiseGlobale = parseFloat(formData.remiseGlobale)||0;
-            const montantRemise = totalHT * (remiseGlobale/100);
-            formData.totalHT = totalHT;
-            formData.montantRemise = montantRemise;
-            formData.totalTTC = totalHT - montantRemise;
+            formData.totalTTC = montantAchat(formData);
         }
     }
     return formData;
@@ -1210,8 +1314,8 @@ function updateStockForOperation(section, data) {
             let stockItem = currentData.data.stock.find(s => s.nom && s.nom.toLowerCase() === article.produit.toLowerCase());
             if (stockItem) {
                 stockItem.quantite = (parseInt(stockItem.quantite)||0) + (parseInt(article.quantite)||0);
-                stockItem.prixAchat = parseFloat(article.prixAchat)||0;
-                stockItem.prixVente = parseFloat(article.prixVente)||0;
+                stockItem.prixAchat = parseNumeric(article.prixAchat)||0;
+                stockItem.prixVente = parseNumeric(article.prixVente)||0;
                 stockItem.datePeremption = article.datePeremption || stockItem.datePeremption;
                 stockItem.dernierFournisseur = data.fournisseur || stockItem.dernierFournisseur;
                 stockItem.modifieLe = new Date().toISOString();
@@ -1220,8 +1324,8 @@ function updateStockForOperation(section, data) {
                     id: generateId(),
                     nom: article.produit,
                     quantite: parseInt(article.quantite)||0,
-                    prixAchat: parseFloat(article.prixAchat)||0,
-                    prixVente: parseFloat(article.prixVente)||0,
+                    prixAchat: parseNumeric(article.prixAchat)||0,
+                    prixVente: parseNumeric(article.prixVente)||0,
                     datePeremption: article.datePeremption,
                     dernierFournisseur: data.fournisseur,
                     seuil: 5,
@@ -1298,7 +1402,7 @@ function exportData() {
     if (!currentData) { showAlert('Aucune donnée à exporter', 'error'); return; }
     showProgress('Préparation...', 20);
     const exportData = JSON.parse(JSON.stringify(currentData));
-    exportData.metadata = exportData.metadata || {}; // <-- garde-fou
+    exportData.metadata = exportData.metadata || {};
     exportData.metadata.exportDateIso = new Date().toISOString();
     exportData.metadata.exportedFrom = 'offline-app-pro';
     showProgress('Génération du fichier...', 80);
@@ -1316,17 +1420,14 @@ function clearAllData() {
         currentData = null;
         originalData = null;
 
-        // Désactiver l’export et remettre les badges à 0
         document.getElementById('exportBtn').disabled = true;
         updateNavBadges();
 
-        // Réinitialiser le dashboard (empty state visible)
         const emptyState = document.getElementById('dashboardEmpty');
         const content = document.getElementById('dashboardContent');
         if (emptyState) emptyState.style.display = 'block';
         if (content) content.style.display = 'none';
 
-        // Revenir au dashboard sans dépendre de event
         showSection('dashboard');
 
         showAlert('Toutes les données ont été effacées', 'info');
